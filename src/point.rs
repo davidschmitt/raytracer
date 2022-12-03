@@ -1,18 +1,19 @@
-use tuple;
+use crate::tuple;
+use crate::float;
 
-pub struct PointOrVector {
+pub struct Point {
     x:f64,
     y:f64,
     z:f64,
     w:f64,
 }
 
-pub fn tuple(value:&PointOrVector) -> Tuple {
+pub fn to_tuple(value:&Point) -> tuple::Tuple {
     return (value.x, value.y, value.z, value.w);
 }
 
-pub fn from_tuple(value: Tuple) -> PointOrVector{
-    return PointOrVector {
+pub fn from_tuple(value: tuple::Tuple) -> Point{
+    return Point {
         x:value.0,
         y:value.1,
         z:value.2,
@@ -20,9 +21,9 @@ pub fn from_tuple(value: Tuple) -> PointOrVector{
     }
 }
 
-pub fn add(a:&PointOrVector, b:&PointOrVector) -> PointOrVector{
-    assert!(f64_equals(a.w, 0.0) || f64_equals(b.w, 0.0));
-    PointOrVector {
+pub fn add(a:&Point, b:&Point) -> Point{
+    assert!(float::equals(a.w, 0.0) || float::equals(b.w, 0.0));
+    Point {
         x:a.x + b.x,
         y:a.y + b.y,
         z:a.z + b.z,
@@ -30,9 +31,9 @@ pub fn add(a:&PointOrVector, b:&PointOrVector) -> PointOrVector{
     }
 }
 
-pub fn subtract(a:&PointOrVector, b:&PointOrVector) -> PointOrVector{
-    assert!(!(f64_equals(a.w, 0.0) && f64_equals(b.w, 1.0)));
-    PointOrVector {
+pub fn subtract(a:&Point, b:&Point) -> Point{
+    assert!(!(float::equals(a.w, 0.0) && float::equals(b.w, 1.0)));
+    Point {
         x:a.x - b.x,
         y:a.y - b.y,
         z:a.z - b.z,
@@ -40,45 +41,38 @@ pub fn subtract(a:&PointOrVector, b:&PointOrVector) -> PointOrVector{
     }
 }
 
-pub fn point(x:f64, y:f64, z:f64) -> PointOrVector {
-    PointOrVector {
-        x:x,
-        y:y,
-        z:z,
+pub fn point(x:f64, y:f64, z:f64) -> Point {
+    Point {
+        x,
+        y,
+        z,
         w:1.0
     }
 }
 
-pub fn vector(x:f64, y:f64, z:f64) -> PointOrVector {
-    PointOrVector {
-        x:x,
-        y:y,
-        z:z,
+pub fn vector(x:f64, y:f64, z:f64) -> Point {
+    Point {
+        x,
+        y,
+        z,
         w:0.0
     }
 }
 
-pub fn is_point(value:&PointOrVector) -> bool {
-    return f64_equals(value.w, 1.0);
+pub fn is_point(value:&Point) -> bool {
+    return float::equals(value.w, 1.0);
 }
 
-pub fn is_vector(value:&PointOrVector) -> bool {
-    return f64_equals(value.w, 0.0);
+pub fn is_vector(value:&Point) -> bool {
+    return float::equals(value.w, 0.0);
 }
 
-const EPSILON:f64 = 0.00001;
-pub fn f64_equals(a:f64, b:f64) -> bool {
-    return (a - b).abs() < EPSILON;
+pub fn equals(a:&Point, b:&Point) -> bool {
+    return float::equals(a.x, b.x) &&
+    float::equals(a.y, b.y) &&
+    float::equals(a.z, b.z) &&
+    float::equals(a.w, b.w);
 }
-
-pub fn equals(a:&PointOrVector, b:&PointOrVector) -> bool {
-    return f64_equals(a.x, b.x) &&
-    f64_equals(a.y, b.y) &&
-    f64_equals(a.z, b.z) &&
-    f64_equals(a.w, b.w);
-}
-
-
 
 #[cfg(test)]
 mod tests {
@@ -92,10 +86,10 @@ mod tests {
         let z = 3.1;
         let w: f64 = 1.0;
         let point = from_tuple((x,y,z,w));
-        assert!(f64_equals(point.x, x));
-        assert!(f64_equals(point.y, y));
-        assert!(f64_equals(point.z, z));
-        assert!(f64_equals(point.w, w));
+        assert!(float::equals(point.x, x));
+        assert!(float::equals(point.y, y));
+        assert!(float::equals(point.z, z));
+        assert!(float::equals(point.w, w));
         assert!(is_point(&point));
         assert!(!is_vector(&point));
     }
@@ -108,10 +102,10 @@ mod tests {
         let z = 3.1;
         let w: f64 = 0.0;
         let vector = from_tuple((x,y,z,w));
-        assert!(f64_equals(vector.x, x));
-        assert!(f64_equals(vector.y, y));
-        assert!(f64_equals(vector.z, z));
-        assert!(f64_equals(vector.w, w));
+        assert!(float::equals(vector.x, x));
+        assert!(float::equals(vector.y, y));
+        assert!(float::equals(vector.z, z));
+        assert!(float::equals(vector.w, w));
         assert!(!is_point(&vector));
         assert!(is_vector(&vector));
     }
@@ -124,12 +118,12 @@ mod tests {
         let z = 3.1;
         let w: f64 = 1.0;
         let point = point(x , y, z);
-        let tuple = tuple(&point);
-        assert!(f64_equals(tuple.0, point.x));
-        assert!(f64_equals(tuple.1, point.y));
-        assert!(f64_equals(tuple.2, point.z));
-        assert!(f64_equals(tuple.3, point.w));
-        assert!(f64_equals(tuple.3, w));
+        let tuple = to_tuple(&point);
+        assert!(float::equals(tuple.0, point.x));
+        assert!(float::equals(tuple.1, point.y));
+        assert!(float::equals(tuple.2, point.z));
+        assert!(float::equals(tuple.3, point.w));
+        assert!(float::equals(tuple.3, w));
     }
 
     // Page 4
@@ -140,12 +134,12 @@ mod tests {
         let z = 3.1;
         let w: f64 = 0.0;
         let vector = vector(x , y, z);
-        let tuple = tuple(&vector);
-        assert!(f64_equals(tuple.0, vector.x));
-        assert!(f64_equals(tuple.1, vector.y));
-        assert!(f64_equals(tuple.2, vector.z));
-        assert!(f64_equals(tuple.3, vector.w));
-        assert!(f64_equals(tuple.3, w));
+        let tuple = to_tuple(&vector);
+        assert!(float::equals(tuple.0, vector.x));
+        assert!(float::equals(tuple.1, vector.y));
+        assert!(float::equals(tuple.2, vector.z));
+        assert!(float::equals(tuple.3, vector.w));
+        assert!(float::equals(tuple.3, w));
     }
 
     // Page 6
@@ -155,10 +149,10 @@ mod tests {
         let v = vector(-2.0, 3.0, 1.0);
 
         let pv = add(&p, &v);
-        assert!(f64_equals(pv.x, 1.0));
-        assert!(f64_equals(pv.y, 1.0));
-        assert!(f64_equals(pv.z, 6.0));
-        assert!(f64_equals(pv.w, 1.0));
+        assert!(float::equals(pv.x, 1.0));
+        assert!(float::equals(pv.y, 1.0));
+        assert!(float::equals(pv.z, 6.0));
+        assert!(float::equals(pv.w, 1.0));
     }
 
     // Page 6
@@ -227,6 +221,4 @@ mod tests {
         subtract(&v, &p);
     }
 
-    #[test]
-    fn should negate tuples
 }
