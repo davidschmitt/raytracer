@@ -1,0 +1,1 @@
+pub type Tuple = (f64, f64, f64, f64);
