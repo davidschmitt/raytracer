@@ -1,4 +1,52 @@
 use crate::float;
+#[derive(Clone, Copy, Debug)]
+pub struct Color {
+    pub red: f64,
+    pub green: f64,
+    pub blue: f64
+}
+
+pub fn color(red: f64, green: f64, blue: f64) -> Color {
+    return Color { red, green, blue };
+}
+
+pub fn equals(a: &Color, b: &Color) -> bool {
+    return float::equals(a.red, b.red)
+        && float::equals(a.green, b.green)
+        && float::equals(a.blue, b.blue);
+}
+
+pub fn add(a: &Color, b: &Color) -> Color {
+    Color {
+        red: a.red + b.red,
+        green: a.green + b.green,
+        blue: a.blue + b.blue,
+    }
+}
+
+pub fn subtract(a: &Color, b: &Color) -> Color {
+    Color {
+        red: a.red - b.red,
+        green: a.green - b.green,
+        blue: a.blue - b.blue,
+    }
+}
+
+pub fn multiply(col: &Color, scalar: f64) -> Color {
+    Color {
+        red: col.red * scalar,
+        green: col.green * scalar,
+        blue: col.blue * scalar,
+    }
+}
+
+pub fn product(a: &Color, b: &Color) -> Color {
+    Color {
+        red: a.red * b.red,
+        green: a.green * b.green,
+        blue: a.blue * b.blue,
+    }
+}
 
 #[cfg(test)]
 mod tests {
