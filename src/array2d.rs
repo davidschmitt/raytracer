@@ -11,11 +11,7 @@ pub struct Array2D<T> {
 impl<T: Clone> Array2D<T> {
     pub fn new(width: usize, height: usize, init: T) -> Self {
         let arr = vec![init; width * height].into_boxed_slice();
-        Self {
-            arr,
-            width,
-            height,
-        }
+        Self { arr, width, height }
     }
     pub fn width(&self) -> usize {
         self.width
@@ -29,12 +25,12 @@ impl<T> Index<usize> for Array2D<T> {
     type Output = [T];
     fn index(&self, index: usize) -> &[T] {
         let from = index * self.height;
-        &self.arr[from .. from + self.height]
+        &self.arr[from..from + self.height]
     }
 }
 impl<T> IndexMut<usize> for Array2D<T> {
     fn index_mut(&mut self, index: usize) -> &mut [T] {
         let from = index * self.height;
-        &mut self.arr[from .. from + self.height]
+        &mut self.arr[from..from + self.height]
     }
 }

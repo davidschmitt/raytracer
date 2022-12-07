@@ -1,11 +1,11 @@
-mod float;
-mod tuple;
-mod color;
 mod array2d;
 mod canvas;
+mod color;
+mod float;
 mod matrix2;
 mod matrix3;
 mod matrix4;
+mod tuple;
 fn main() {
     let mut art = canvas::canvas(256, 256);
     for x in 0..art.width() {
@@ -19,6 +19,6 @@ fn main() {
     }
     let lines = canvas::to_ppm(&art);
     for line in lines.iter() {
-        println!("{}",line);
+        println!("{}", line);
     }
 }

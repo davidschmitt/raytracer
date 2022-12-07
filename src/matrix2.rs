@@ -7,7 +7,7 @@ pub fn matrix2() -> Matrix2 {
     return matrix;
 }
 
-pub fn equals(a: &Matrix2, b: &Matrix2) -> bool{
+pub fn equals(a: &Matrix2, b: &Matrix2) -> bool {
     for i in 0..2 {
         for j in 0..2 {
             if !float::equals(a[i][j], b[i][j]) {
@@ -19,8 +19,7 @@ pub fn equals(a: &Matrix2, b: &Matrix2) -> bool{
 }
 
 pub fn determinant(m: &Matrix2) -> f64 {
-    return m[0][0] * m[1][1] -
-    m[1][0] * m[0][1];
+    return m[0][0] * m[1][1] - m[1][0] * m[0][1];
 }
 
 #[cfg(test)]
@@ -29,10 +28,7 @@ mod tests {
 
     #[test]
     fn should_create() {
-        let m: Matrix2 = [
-          [-3.0, 5.0],
-          [1.0, -2.0]
-        ];
+        let m: Matrix2 = [[-3.0, 5.0], [1.0, -2.0]];
         assert!(float::equals(m[0][0], -3.0));
         assert!(float::equals(m[0][1], 5.0));
         assert!(float::equals(m[1][0], 1.0));
@@ -41,10 +37,7 @@ mod tests {
 
     #[test]
     fn should_calculate_determinant() {
-        let a: Matrix2 = [
-            [1.0, 5.0],
-            [-3.0, 2.0]
-        ];
+        let a: Matrix2 = [[1.0, 5.0], [-3.0, 2.0]];
         assert!(float::equals(determinant(&a), 17.0));
     }
 }

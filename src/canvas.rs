@@ -1,5 +1,5 @@
-use crate::color;
 use crate::array2d;
+use crate::color;
 
 pub type Canvas = array2d::Array2D<color::Color>;
 
@@ -7,15 +7,15 @@ pub fn canvas(width: usize, height: usize) -> Canvas {
     return Canvas::new(width, height, color::color(0.0, 0.0, 0.0));
 }
 
-pub fn pixel_at(canvas: &Canvas, x:usize, y:usize) -> color::Color {
+pub fn pixel_at(canvas: &Canvas, x: usize, y: usize) -> color::Color {
     return canvas[x][y];
 }
 
-pub fn write_pixel(canvas: &mut Canvas, x:usize, y:usize, color: &color::Color) {
+pub fn write_pixel(canvas: &mut Canvas, x: usize, y: usize, color: &color::Color) {
     canvas[x][y] = *color;
 }
 
-pub fn color_normalize(mut c:f64) -> i32 {
+pub fn color_normalize(mut c: f64) -> i32 {
     if c < 0.0 {
         c = 0.0;
     } else if c > 1.0 {
@@ -24,12 +24,12 @@ pub fn color_normalize(mut c:f64) -> i32 {
     return (c * 255.0).round() as i32;
 }
 
-pub fn to_ppm(canvas: &Canvas) -> Vec<String>{
-    let mut v:Vec<String> = Vec::new();
+pub fn to_ppm(canvas: &Canvas) -> Vec<String> {
+    let mut v: Vec<String> = Vec::new();
     v.push(String::from("P3"));
     v.push(format!("{} {}", canvas.width(), canvas.height()));
     v.push(String::from("255"));
-    for y in 0..canvas.height(){
+    for y in 0..canvas.height() {
         let mut line = String::with_capacity(70);
         let mut length = 0;
         for x in 0..canvas.width() {
@@ -43,7 +43,12 @@ pub fn to_ppm(canvas: &Canvas) -> Vec<String>{
             }
             length += 1;
             let color = pixel_at(&canvas, x, y);
-            line.push_str(&format!("{} {} {}", color_normalize(color.red), color_normalize(color.green), color_normalize(color.blue)));
+            line.push_str(&format!(
+                "{} {} {}",
+                color_normalize(color.red),
+                color_normalize(color.green),
+                color_normalize(color.blue)
+            ));
         }
         v.push(line);
     }
@@ -64,14 +69,14 @@ mod tests {
         assert!(c.width() == width);
         assert!(c.height() == height);
         for w in 0..width {
-          for h in 0..height {
-            println!("{}, {}", w, h);
-            let actual = &pixel_at(&c, w, h);
-            if !color::equals(&actual, &pixel) {
-                println!("Wrong: {:?}", actual);
+            for h in 0..height {
+                println!("{}, {}", w, h);
+                let actual = &pixel_at(&c, w, h);
+                if !color::equals(&actual, &pixel) {
+                    println!("Wrong: {:?}", actual);
+                }
+                assert!(color::equals(&actual, &pixel));
             }
-            assert!(color::equals(&actual, &pixel));
-          }
         }
     }
 
@@ -96,7 +101,7 @@ mod tests {
 
     // Page 21
     #[test]
-    fn should_generate_valid_ppm_pixel_data () {
+    fn should_generate_valid_ppm_pixel_data() {
         let mut c = canvas(5, 3);
         let c1 = color::color(1.5, 0.0, 0.0);
         let c2 = color::color(0.0, 0.5, 0.0);
@@ -115,7 +120,7 @@ mod tests {
 
     // Page 21
     #[test]
-    fn should_ensure_short_lines () {
+    fn should_ensure_short_lines() {
         let width = 10;
         let height = 2;
         let mut c = canvas(width, height);
