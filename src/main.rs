@@ -3,6 +3,9 @@ mod tuple;
 mod color;
 mod array2d;
 mod canvas;
+mod matrix2;
+mod matrix3;
+mod matrix4;
 fn main() {
     let mut art = canvas::canvas(256, 256);
     for x in 0..art.width() {
