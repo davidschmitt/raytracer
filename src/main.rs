@@ -5,6 +5,8 @@ mod float;
 mod matrix2;
 mod matrix3;
 mod matrix4;
+mod ray;
+mod transform;
 mod tuple;
 fn main() {
     let mut art = canvas::canvas(256, 256);
