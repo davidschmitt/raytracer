@@ -1,4 +1,6 @@
 use crate::float;
+
+#[derive(Clone, Copy, Debug)]
 pub struct Tuple {
     pub x: f64,
     pub y: f64,
