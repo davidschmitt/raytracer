@@ -3,54 +3,63 @@ use crate::ray;
 use crate::tuple;
 
 pub fn translation(x: f64, y: f64, z: f64) -> matrix4::Matrix4 {
-    return [[1.0, 0.0, 0.0, x],
-    [0.0, 1.0, 0.0, y],
-    [0.0, 0.0, 1.0, z],
-    [0.0, 0.0, 0.0, 1.0]];
+    return [
+        [1.0, 0.0, 0.0, x],
+        [0.0, 1.0, 0.0, y],
+        [0.0, 0.0, 1.0, z],
+        [0.0, 0.0, 0.0, 1.0],
+    ];
 }
 
-pub fn scaling(x: f64, y: f64, z: f64) -> matrix4::Matrix4{
-    return [[x, 0.0, 0.0, 0.0],
-    [0.0, y, 0.0, 0.0],
-    [0.0, 0.0, z, 0.0],
-    [0.0, 0.0, 0.0, 1.0]];
+pub fn scaling(x: f64, y: f64, z: f64) -> matrix4::Matrix4 {
+    return [
+        [x, 0.0, 0.0, 0.0],
+        [0.0, y, 0.0, 0.0],
+        [0.0, 0.0, z, 0.0],
+        [0.0, 0.0, 0.0, 1.0],
+    ];
 }
-
-
 
 pub fn rotation_x(rad: f64) -> matrix4::Matrix4 {
-    return [[1.0, 0.0, 0.0, 0.0],
-    [0.0, rad.cos(), -rad.sin(), 0.0],
-    [0.0, rad.sin(), rad.cos(), 0.0],
-    [0.0, 0.0, 0.0, 1.0]];
+    return [
+        [1.0, 0.0, 0.0, 0.0],
+        [0.0, rad.cos(), -rad.sin(), 0.0],
+        [0.0, rad.sin(), rad.cos(), 0.0],
+        [0.0, 0.0, 0.0, 1.0],
+    ];
 }
 
 pub fn rotation_y(rad: f64) -> matrix4::Matrix4 {
-    return [[rad.cos(), 0.0, rad.sin(), 0.0],
-    [0.0, 1.0, 0.0, 0.0],
-    [-rad.sin(), 0.0, rad.cos(), 0.0],
-    [0.0, 0.0, 0.0, 1.0]];
+    return [
+        [rad.cos(), 0.0, rad.sin(), 0.0],
+        [0.0, 1.0, 0.0, 0.0],
+        [-rad.sin(), 0.0, rad.cos(), 0.0],
+        [0.0, 0.0, 0.0, 1.0],
+    ];
 }
 
 pub fn rotation_z(rad: f64) -> matrix4::Matrix4 {
-    return [[rad.cos(), -rad.sin(), 0.0, 0.0],
-    [rad.sin(), rad.cos(), 0.0, 0.0],
-    [0.0, 0.0, 1.0, 0.0],
-    [0.0, 0.0, 0.0, 1.0]];
+    return [
+        [rad.cos(), -rad.sin(), 0.0, 0.0],
+        [rad.sin(), rad.cos(), 0.0, 0.0],
+        [0.0, 0.0, 1.0, 0.0],
+        [0.0, 0.0, 0.0, 1.0],
+    ];
 }
 
 pub fn shearing(xmy: f64, xmz: f64, ymx: f64, ymz: f64, zmx: f64, zmy: f64) -> matrix4::Matrix4 {
-    return [[1.0, xmy, xmz, 0.0],
-    [ymx, 1.0, ymz, 0.0],
-    [zmx, zmy, 1.0, 0.0],
-    [0.0, 0.0, 0.0, 1.0]];
+    return [
+        [1.0, xmy, xmz, 0.0],
+        [ymx, 1.0, ymz, 0.0],
+        [zmx, zmy, 1.0, 0.0],
+        [0.0, 0.0, 0.0, 1.0],
+    ];
 }
-
 
 pub fn transform(ray: &ray::Ray, matrix: &matrix4::Matrix4) -> ray::Ray {
     return ray::ray(
-      &matrix4::multiply_tuple(matrix, &ray.origin), 
-      &matrix4::multiply_tuple(matrix, &ray.direction)
+        &matrix4::multiply_tuple(matrix, &ray.origin),
+        &matrix4::multiply_tuple(matrix, &ray.direction),
     );
 }
 

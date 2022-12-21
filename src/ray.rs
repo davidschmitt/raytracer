@@ -1,64 +1,67 @@
 use std::vec;
 
-use crate::matrix4;
-use crate::tuple;
-use crate::shape::Shape;
-use crate::shape;
-use crate::intersection;
 use crate::float;
+use crate::intersection;
+use crate::matrix4;
+use crate::shape;
+use crate::shape::Shape;
 use crate::transform;
+use crate::tuple;
 
 pub struct Ray {
-    pub origin:tuple::Tuple,
-    pub direction:tuple::Tuple
+    pub origin: tuple::Tuple,
+    pub direction: tuple::Tuple,
 }
 
-pub fn ray(origin:&tuple::Tuple, direction:&tuple::Tuple) -> Ray {
-    return Ray { origin:*origin, direction:*direction };
+pub fn ray(origin: &tuple::Tuple, direction: &tuple::Tuple) -> Ray {
+    return Ray {
+        origin: *origin,
+        direction: *direction,
+    };
 }
 
-pub fn position(ray:&Ray, magnitude:f64) -> tuple::Tuple {
-    return tuple::add(&ray.origin, &tuple::multiply(&ray.direction, magnitude))
+pub fn position(ray: &Ray, magnitude: f64) -> tuple::Tuple {
+    return tuple::add(&ray.origin, &tuple::multiply(&ray.direction, magnitude));
 }
 
-pub fn spheretoray(ray:&Ray) -> tuple::Tuple {
+pub fn spheretoray(ray: &Ray) -> tuple::Tuple {
     return tuple::subtract(&ray.origin, &tuple::point(0.0, 0.0, 0.0));
 }
 
-pub fn intersect(shape:&Shape, ray:&Ray) -> Vec<intersection::Intersection> {
+pub fn intersect(shape: &Shape, ray: &Ray) -> Vec<intersection::Intersection> {
     match shape {
         Shape::Sphere { id } => {
             let d = spheretoray(&ray);
             let a = tuple::dot(&ray.direction, &ray.direction);
             let b = 2.0 * tuple::dot(&ray.direction, &d);
             let c = tuple::dot(&d, &d) - 1.0;
-        
+
             let discriminant = b.powi(2) - 4.0 * a * c;
-        
+
             if discriminant < 0.0 {
-                return Vec::new()
+                return Vec::new();
             }
-        
+
             let t1 = (-b - (discriminant.sqrt())) / (2.0 * a);
             let t2 = (-b + (discriminant.sqrt())) / (2.0 * a);
-        
+
             let mut vec = Vec::new();
             vec.push(intersection::intersection(t1, shape));
             vec.push(intersection::intersection(t2, shape));
-            return vec
-        },
+            return vec;
+        }
     }
 }
 
-pub fn hit(intvec: &Vec<intersection::Intersection>) -> Option<intersection::Intersection>{
+pub fn hit(intvec: &Vec<intersection::Intersection>) -> Option<intersection::Intersection> {
     let mut closest: Option<intersection::Intersection> = None;
     for i in intvec {
-        if i.t >= 0.0{
+        if i.t >= 0.0 {
             match closest {
                 None => {
                     closest = Some(*i);
-                },
-                Some (thing)  => {
+                }
+                Some(thing) => {
                     if i.t < thing.t {
                         closest = Some(*i)
                     }
@@ -191,7 +194,7 @@ mod tests {
             None => assert!(false),
             Some(i) => {
                 assert!(intersection::equals(&i, &i1));
-            },
+            }
         }
     }
 
@@ -206,7 +209,7 @@ mod tests {
             None => assert!(false),
             Some(i) => {
                 assert!(intersection::equals(&i, &i2));
-            },
+            }
         }
     }
 
@@ -221,7 +224,7 @@ mod tests {
             None => assert!(true),
             Some(_i) => {
                 assert!(false);
-            },
+            }
         }
     }
 
@@ -238,7 +241,7 @@ mod tests {
             None => assert!(false),
             Some(i) => {
                 assert!(intersection::equals(&i, &i4));
-            },
+            }
         }
     }
 
@@ -251,5 +254,4 @@ mod tests {
         assert!(tuple::equals(&r2.origin, &tuple::point(4.0, 6.0, 8.0)));
         assert!(tuple::equals(&r2.direction, &tuple::vector(0.0, 1.0, 0.0)));
     }
-    
 }

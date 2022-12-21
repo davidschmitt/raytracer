@@ -2,14 +2,14 @@ mod array2d;
 mod canvas;
 mod color;
 mod float;
+mod intersection;
 mod matrix2;
 mod matrix3;
 mod matrix4;
 mod ray;
+mod shape;
 mod transform;
 mod tuple;
-mod intersection;
-mod shape;
 
 fn main() {
     /*let mut art = canvas::canvas(256, 256);
@@ -46,7 +46,7 @@ fn main() {
     }
     */
 
-    let mut canvas = canvas :: canvas(256, 256);
+    let mut canvas = canvas::canvas(256, 256);
     let color = color::color(0.0, 0.9, 1.0);
     let sphere = shape::sphere();
     let point = tuple::point(14.0, 19.0, -75.0);
@@ -60,10 +60,8 @@ fn main() {
             let intlist = ray::intersect(&sphere, &ray2);
             let hit = ray::hit(&intlist);
             match hit {
-                None => {
-
-                },
-                Some (_i) => {
+                None => {}
+                Some(_i) => {
                     canvas::write_pixel(&mut canvas, x, y, &color);
                 }
             }
@@ -71,7 +69,6 @@ fn main() {
     }
 
     writeout(canvas)
-    
 }
 
 pub fn writeout(canvas: canvas::Canvas) {
@@ -79,4 +76,4 @@ pub fn writeout(canvas: canvas::Canvas) {
     for line in lines.iter() {
         println!("{}", line);
     }
-} 
+}

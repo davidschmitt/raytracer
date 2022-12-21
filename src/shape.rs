@@ -4,11 +4,13 @@ static shapeid: AtomicI32 = AtomicI32::new(1);
 
 #[derive(Clone, Copy, Debug)]
 pub enum Shape {
-    Sphere { id:i32 }
+    Sphere { id: i32 },
 }
 
 pub fn sphere() -> Shape {
-    return Shape::Sphere { id: (shapeid.fetch_add(1, Ordering::Relaxed)) }
+    return Shape::Sphere {
+        id: (shapeid.fetch_add(1, Ordering::Relaxed)),
+    };
 }
 
 pub fn equals(a: &Shape, b: &Shape) -> bool {
@@ -18,7 +20,7 @@ pub fn equals(a: &Shape, b: &Shape) -> bool {
             match (b) {
                 Shape::Sphere { id } => return aid == id,
             }
-        },
+        }
         _ => false,
     }
 }
