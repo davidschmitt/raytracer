@@ -1,3 +1,11 @@
+use color::{color};
+use transform::{translation, scaling};
+use canvas::{canvas, CanvasMethods};
+use intersection::{intersection, IntersectionsMethods};
+use ray::{ray, RayMethods};
+use shape::{sphere, ShapeMethods};
+use tuple::{point, vector};
+
 mod array2d;
 mod canvas;
 mod color;
@@ -46,23 +54,23 @@ fn main() {
     }
     */
 
-    let mut canvas = canvas::canvas(256, 256);
-    let color = color::color(0.0, 0.9, 1.0);
-    let sphere = shape::sphere();
-    let point = tuple::point(14.0, 19.0, -75.0);
-    let scale = transform::scaling(0.04, 0.04, 0.04);
+    let mut canvas = canvas(256, 256);
+    let c = color(0.0, 0.9, 1.0);
+    let s = sphere();
+    let origin = point(14.0, 19.0, -75.0);
+    let scale = scaling(0.04, 0.04, 0.04);
 
     for x in 0..256 {
         for y in 0..256 {
-            let direction = tuple::vector(x as f64 - 128.0, y as f64 - 128.0, 135.0);
-            let ray = ray::ray(&point, &direction);
-            let ray2 = transform::transform(&ray, &scale);
-            let intlist = ray::intersect(&sphere, &ray2);
-            let hit = ray::hit(&intlist);
+            let direction = vector(x as f64 - 128.0, y as f64 - 128.0, 135.0);
+            let r1 = ray(&origin, &direction);
+            let r2 = r1.transform(&scale);
+            let intlist = s.intersect(&r2);
+            let hit = intlist.hit();
             match hit {
                 None => {}
                 Some(_i) => {
-                    canvas::write_pixel(&mut canvas, x, y, &color);
+                    canvas.write_pixel(x, y, &c);
                 }
             }
         }
@@ -72,7 +80,7 @@ fn main() {
 }
 
 pub fn writeout(canvas: canvas::Canvas) {
-    let lines = canvas::to_ppm(&canvas);
+    let lines = canvas.to_ppm();
     for line in lines.iter() {
         println!("{}", line);
     }
