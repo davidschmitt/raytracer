@@ -1,60 +1,60 @@
-use crate::matrix4;
+use crate::matrix4::Matrix4;
 use crate::ray;
 use crate::tuple;
 use crate::tuple::TupleMethods;
 
-pub fn translation(x: f64, y: f64, z: f64) -> matrix4::Matrix4 {
-    return [
+pub fn translation(x: f64, y: f64, z: f64) -> Matrix4 {
+    return Matrix4([
         [1.0, 0.0, 0.0, x],
         [0.0, 1.0, 0.0, y],
         [0.0, 0.0, 1.0, z],
         [0.0, 0.0, 0.0, 1.0],
-    ];
+    ]);
 }
 
-pub fn scaling(x: f64, y: f64, z: f64) -> matrix4::Matrix4 {
-    return [
+pub fn scaling(x: f64, y: f64, z: f64) -> Matrix4 {
+    return Matrix4([
         [x, 0.0, 0.0, 0.0],
         [0.0, y, 0.0, 0.0],
         [0.0, 0.0, z, 0.0],
         [0.0, 0.0, 0.0, 1.0],
-    ];
+    ]);
 }
 
-pub fn rotation_x(rad: f64) -> matrix4::Matrix4 {
-    return [
+pub fn rotation_x(rad: f64) -> Matrix4 {
+    return Matrix4([
         [1.0, 0.0, 0.0, 0.0],
         [0.0, rad.cos(), -rad.sin(), 0.0],
         [0.0, rad.sin(), rad.cos(), 0.0],
         [0.0, 0.0, 0.0, 1.0],
-    ];
+    ]);
 }
 
-pub fn rotation_y(rad: f64) -> matrix4::Matrix4 {
-    return [
+pub fn rotation_y(rad: f64) -> Matrix4 {
+    return Matrix4([
         [rad.cos(), 0.0, rad.sin(), 0.0],
         [0.0, 1.0, 0.0, 0.0],
         [-rad.sin(), 0.0, rad.cos(), 0.0],
         [0.0, 0.0, 0.0, 1.0],
-    ];
+    ]);
 }
 
-pub fn rotation_z(rad: f64) -> matrix4::Matrix4 {
-    return [
+pub fn rotation_z(rad: f64) -> Matrix4 {
+    return Matrix4([
         [rad.cos(), -rad.sin(), 0.0, 0.0],
         [rad.sin(), rad.cos(), 0.0, 0.0],
         [0.0, 0.0, 1.0, 0.0],
         [0.0, 0.0, 0.0, 1.0],
-    ];
+    ]);
 }
 
-pub fn shearing(xmy: f64, xmz: f64, ymx: f64, ymz: f64, zmx: f64, zmy: f64) -> matrix4::Matrix4 {
-    return [
+pub fn shearing(xmy: f64, xmz: f64, ymx: f64, ymz: f64, zmx: f64, zmy: f64) -> Matrix4 {
+    return Matrix4([
         [1.0, xmy, xmz, 0.0],
         [ymx, 1.0, ymz, 0.0],
         [zmx, zmy, 1.0, 0.0],
         [0.0, 0.0, 0.0, 1.0],
-    ];
+    ]);
 }
 
 

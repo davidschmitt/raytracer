@@ -1,4 +1,6 @@
 use crate::float::F64IsAbout;
+use std::cmp::{PartialEq};
+use std::convert::AsRef;
 
 #[derive(Clone, Copy, Debug)]
 pub struct Tuple {
@@ -8,23 +10,40 @@ pub struct Tuple {
     pub w: f64,
 }
 
+impl AsRef<Tuple> for Tuple {
+    fn as_ref(&self) -> &Tuple {
+        return self;
+    }
+}
+
+impl PartialEq<Tuple> for Tuple {
+    fn eq(&self, other: &Tuple) -> bool {
+        return self.equals(other);
+    }
+
+    fn ne(&self, other: &Tuple) -> bool {
+        return !self.equals(other);
+    }
+}    
+
 pub trait TupleMethods {
-    fn add(&self, peer: &Tuple) -> Tuple;
-    fn subtract(&self, peer: &Tuple) -> Tuple;
+    fn sum<T: AsRef<Tuple>>(&self, peer: T) -> Tuple;
+    fn subtract<T: AsRef<Tuple>>(&self, peer: T) -> Tuple;
     fn multiply(&self, scalar: f64) -> Tuple;
     fn divide(&self, scalar: f64) -> Tuple;
     fn negate(&self) -> Tuple;
-    fn dot(&self, peer: &Tuple) -> f64;
-    fn cross(&self, peer: &Tuple) -> Tuple;
+    fn dot<T: AsRef<Tuple>>(&self, peer: T) -> f64;
+    fn cross<T: AsRef<Tuple>>(&self, peer: T) -> Tuple;
     fn normalize(&self) -> Tuple;
     fn magnitude(&self) -> f64;
     fn is_point(&self) -> bool;
     fn is_vector(&self) -> bool;
-    fn equals(&self, peer: &Tuple) -> bool;
+    fn equals<T: AsRef<Tuple>>(&self, peer: T) -> bool;
 }
 
 impl TupleMethods for Tuple {
-    fn add(self: &Tuple, peer: &Tuple) -> Tuple {
+    fn sum<T: AsRef<Tuple>>(self: &Tuple, other: T) -> Tuple {
+        let peer = other.as_ref();
         Tuple {
             x: self.x + peer.x,
             y: self.y + peer.y,
@@ -33,7 +52,8 @@ impl TupleMethods for Tuple {
         }
     }
 
-    fn subtract(self: &Tuple, peer: &Tuple) -> Tuple {
+    fn subtract<T: AsRef<Tuple>>(self: &Tuple, other: T) -> Tuple {
+        let peer = other.as_ref();
         Tuple {
             x: self.x - peer.x,
             y: self.y - peer.y,
@@ -69,11 +89,13 @@ impl TupleMethods for Tuple {
         }
     }
 
-    fn dot(self: &Tuple, peer: &Tuple) -> f64 {
+    fn dot<T: AsRef<Tuple>>(self: &Tuple, other: T) -> f64 {
+        let peer = other.as_ref();
         return self.x * peer.x + self.y * peer.y + self.z * peer.z + self.w * peer.w;
     }
 
-    fn cross(self: &Tuple, peer: &Tuple) -> Tuple {
+    fn cross<T: AsRef<Tuple>>(self: &Tuple, other: T) -> Tuple {
+        let peer = other.as_ref();
         return Tuple {
             x: self.y * peer.z - self.z * peer.y,
             y: self.z * peer.x - self.x * peer.z,
@@ -99,17 +121,19 @@ impl TupleMethods for Tuple {
     }
 
     fn is_point(self: &Tuple) -> bool {
-        self.w.is_about(1.0)
+        self.w.equals(1.0)
     }
 
     fn is_vector(self: &Tuple) -> bool {
-        self.w.is_about(0.0)
+        self.w.equals(0.0)
     }
-    fn equals(self: &Tuple, peer: &Tuple) -> bool {
-        self.x.is_about(peer.x)
-            && self.y.is_about(peer.y)
-            && self.z.is_about(peer.z)
-            && self.w.is_about(peer.w)
+
+    fn equals<T: AsRef<Tuple>>(self: &Tuple, other: T) -> bool {
+        let peer = other.as_ref();
+        self.x.equals(peer.x)
+            && self.y.equals(peer.y)
+            && self.z.equals(peer.z)
+            && self.w.equals(peer.w)
     }
 
 }
@@ -138,10 +162,10 @@ mod tests {
         let z = 3.1;
         let w: f64 = 1.0;
         let point = tuple(x, y, z, w);
-        assert!(point.x.is_about(x));
-        assert!(point.y.is_about(y));
-        assert!(point.z.is_about(z));
-        assert!(point.w.is_about(w));
+        assert!(point.x.equals(x));
+        assert!(point.y.equals(y));
+        assert!(point.z.equals(z));
+        assert!(point.w.equals(w));
         assert!(point.is_point());
         assert!(!point.is_vector());
     }
@@ -154,10 +178,10 @@ mod tests {
         let z = 3.1;
         let w: f64 = 0.0;
         let vector = tuple(x, y, z, w);
-        assert!(vector.x.is_about(x));
-        assert!(vector.y.is_about(y));
-        assert!(vector.z.is_about(z));
-        assert!(vector.w.is_about(w));
+        assert!(vector.x.equals(x));
+        assert!(vector.y.equals(y));
+        assert!(vector.z.equals(z));
+        assert!(vector.w.equals(w));
         assert!(!vector.is_point());
         assert!(vector.is_vector());
     }
@@ -171,11 +195,11 @@ mod tests {
         let w: f64 = 1.0;
         let point = point(x, y, z);
         let tuple = tuple(x, y, z, w);
-        assert!(tuple.x.is_about(point.x));
-        assert!(tuple.y.is_about(point.y));
-        assert!(tuple.z.is_about(point.z));
-        assert!(tuple.w.is_about(point.w));
-        assert!(tuple.w.is_about(w));
+        assert!(tuple.x.equals(point.x));
+        assert!(tuple.y.equals(point.y));
+        assert!(tuple.z.equals(point.z));
+        assert!(tuple.w.equals(point.w));
+        assert!(tuple.w.equals(w));
     }
 
     // Page 4
@@ -187,11 +211,11 @@ mod tests {
         let w: f64 = 0.0;
         let vector = vector(x, y, z);
         let tuple = tuple(x, y, z, w);
-        assert!(tuple.x.is_about(vector.x));
-        assert!(tuple.y.is_about(vector.y));
-        assert!(tuple.z.is_about(vector.z));
-        assert!(tuple.w.is_about(vector.w));
-        assert!(tuple.w.is_about(w));
+        assert!(tuple.x.equals(vector.x));
+        assert!(tuple.y.equals(vector.y));
+        assert!(tuple.z.equals(vector.z));
+        assert!(tuple.w.equals(vector.w));
+        assert!(tuple.w.equals(w));
     }
 
     // Page 6
@@ -200,11 +224,11 @@ mod tests {
         let p = point(3.0, -2.0, 5.0);
         let v = vector(-2.0, 3.0, 1.0);
 
-        let pv = p.add(&v);
-        assert!(pv.x.is_about(1.0));
-        assert!(pv.y.is_about(1.0));
-        assert!(pv.z.is_about(6.0));
-        assert!(pv.w.is_about(1.0));
+        let pv = p.sum(&v);
+        assert!(pv.x.equals(1.0));
+        assert!(pv.y.equals(1.0));
+        assert!(pv.z.equals(6.0));
+        assert!(pv.w.equals(1.0));
     }
 
     // Page 6
@@ -291,11 +315,11 @@ mod tests {
     // Page 8
     #[test]
     fn should_calculate_magnitude() {
-        assert!(vector(1.0, 0.0, 0.0).magnitude().is_about(1.0));
-        assert!(vector(0.0, 1.0, 0.0).magnitude().is_about(1.0));
-        assert!(vector(0.0, 0.0, 1.0).magnitude().is_about(1.0));
-        assert!(vector(1.0, 2.0, 3.0).magnitude().is_about(f64::sqrt(14.0)));
-        assert!(vector(-1.0, -2.0, -3.0).magnitude().is_about(f64::sqrt(14.0)));
+        assert!(vector(1.0, 0.0, 0.0).magnitude().equals(1.0));
+        assert!(vector(0.0, 1.0, 0.0).magnitude().equals(1.0));
+        assert!(vector(0.0, 0.0, 1.0).magnitude().equals(1.0));
+        assert!(vector(1.0, 2.0, 3.0).magnitude().equals(f64::sqrt(14.0)));
+        assert!(vector(-1.0, -2.0, -3.0).magnitude().equals(f64::sqrt(14.0)));
     }
 
     #[test]
@@ -310,7 +334,7 @@ mod tests {
     fn should_calculate_dot_product() {
         let a = vector(1.0, 2.0, 3.0);
         let b = vector(2.0, 3.0, 4.0);
-        assert!(a.dot(&b).is_about(20.0));
+        assert!(a.dot(&b).equals(20.0));
     }
 
     // Page 11

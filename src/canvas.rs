@@ -1,12 +1,13 @@
 use crate::array2d;
-use crate::color::{color, Color, ColorMethods};
+use crate::color::{color, Color, Pixel, ColorMethods};
 
 pub type Canvas = array2d::Array2D<Color>;
 
 pub trait CanvasMethods {
     fn pixel_at(&self, x: usize, y: usize) -> Color;
-    fn write_pixel(&mut self, x: usize, y: usize, color: &Color);
+    fn write_pixel<T: AsRef<Color>>(&mut self, x: usize, y: usize, color: T);
     fn to_ppm(&self) -> Vec<String>;
+    fn write_out(&self);
 }
 
 impl CanvasMethods for Canvas {
@@ -14,8 +15,8 @@ impl CanvasMethods for Canvas {
         return self[x][y];
     }
 
-    fn write_pixel(self: &mut Canvas, x: usize, y: usize, color: &Color) {
-        self[x][y] = *color;
+    fn write_pixel<T: AsRef<Color>>(self: &mut Canvas, x: usize, y: usize, color: T) {
+        self[x][y] = *color.as_ref();
     }
 
     fn to_ppm(self: &Canvas) -> Vec<String> {
@@ -37,7 +38,7 @@ impl CanvasMethods for Canvas {
                 }
                 length += 1;
                 let color = self.pixel_at(x, y);
-                let pixel = color.to_pixel(255);
+                let pixel = Pixel::from(&color);
                 line.push_str(&format!(
                     "{} {} {}",
                     pixel.red, pixel.green, pixel.blue
@@ -46,6 +47,13 @@ impl CanvasMethods for Canvas {
             v.push(line);
         }
         return v;
+    }
+    fn write_out(&self) {
+        let lines = self.to_ppm();
+        for line in lines.iter() {
+            println!("{}", line);
+        }
+        
     }
 }
 

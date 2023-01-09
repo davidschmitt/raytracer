@@ -15,7 +15,7 @@ impl Matrix3Methods for Matrix3 {
     fn equals(self: &Matrix3, peer: &Matrix3) -> bool {
         for i in 0..3 {
             for j in 0..3 {
-                if !self[i][j].is_about(peer[i][j]) {
+                if !self[i][j].equals(peer[i][j]) {
                     return false;
                 }
             }
@@ -73,10 +73,10 @@ mod tests {
     #[test]
     fn should_create() {
         let m: Matrix3 = [[-3.0, 5.0, 0.0], [1.0, -2.0, -7.0], [0.0, 1.0, 1.0]];
-        assert!(m[0][0].is_about(-3.0));
-        assert!(m[0][1].is_about(5.0));
-        assert!(m[1][0].is_about(1.0));
-        assert!(m[1][1].is_about(-2.0));
+        assert!(m[0][0].equals(-3.0));
+        assert!(m[0][1].equals(5.0));
+        assert!(m[1][0].equals(1.0));
+        assert!(m[1][1].equals(-2.0));
     }
 
     #[test]
@@ -91,25 +91,25 @@ mod tests {
     fn should_calculate_minor() {
         let a: Matrix3 = [[3.0, 5.0, 0.0], [2.0, -1.0, -7.0], [6.0, -1.0, 5.0]];
         let b = a.submatrix(1, 0);
-        assert!(b.determinant().is_about(25.0));
-        assert!(a.minor(1, 0).is_about(25.0));
+        assert!(b.determinant().equals(25.0));
+        assert!(a.minor(1, 0).equals(25.0));
     }
 
     #[test]
     fn should_calculate_cofactor() {
         let a: Matrix3 = [[3.0, 5.0, 0.0], [2.0, -1.0, -7.0], [6.0, -1.0, 5.0]];
-        assert!(a.minor(0, 0).is_about(-12.0));
-        assert!(a.cofactor(0, 0).is_about(-12.0));
-        assert!(a.minor(1, 0).is_about(25.0));
-        assert!(a.cofactor(1, 0).is_about(-25.0));
+        assert!(a.minor(0, 0).equals(-12.0));
+        assert!(a.cofactor(0, 0).equals(-12.0));
+        assert!(a.minor(1, 0).equals(25.0));
+        assert!(a.cofactor(1, 0).equals(-25.0));
     }
 
     #[test]
     fn should_calculate_determinant() {
         let a: Matrix3 = [[1.0, 2.0, 6.0], [-5.0, 8.0, -4.0], [2.0, 6.0, 4.0]];
-        assert!(a.cofactor(0, 0).is_about(56.0));
-        assert!(a.cofactor(0, 1).is_about(12.0));
-        assert!(a.cofactor(0, 2).is_about(-46.0));
-        assert!(a.determinant().is_about(-196.0));
+        assert!(a.cofactor(0, 0).equals(56.0));
+        assert!(a.cofactor(0, 1).equals(12.0));
+        assert!(a.cofactor(0, 2).equals(-46.0));
+        assert!(a.determinant().equals(-196.0));
     }
 }

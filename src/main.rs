@@ -56,16 +56,17 @@ fn main() {
 
     let mut canvas = canvas(256, 256);
     let c = color(0.0, 0.9, 1.0);
-    let s = sphere();
+    let mut s = sphere();
     let origin = point(14.0, 19.0, -75.0);
-    let scale = scaling(0.04, 0.04, 0.04);
+    let scale = scaling(25.0, 25.0, 25.0);
+    s.set_transform(&scale);
+
 
     for x in 0..256 {
         for y in 0..256 {
             let direction = vector(x as f64 - 128.0, y as f64 - 128.0, 135.0);
             let r1 = ray(&origin, &direction);
-            let r2 = r1.transform(&scale);
-            let intlist = s.intersect(&r2);
+            let intlist = s.intersect(&r1);
             let hit = intlist.hit();
             match hit {
                 None => {}
@@ -76,12 +77,5 @@ fn main() {
         }
     }
 
-    writeout(canvas)
-}
-
-pub fn writeout(canvas: canvas::Canvas) {
-    let lines = canvas.to_ppm();
-    for line in lines.iter() {
-        println!("{}", line);
-    }
+    canvas.write_out();
 }

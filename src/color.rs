@@ -1,4 +1,8 @@
 use crate::float::F64IsAbout;
+use std::ops::{Mul, Sub, Add};
+use std::cmp::{PartialEq};
+use std::convert::AsRef;
+use std::convert::From;
 
 #[derive(Clone, Copy, Debug)]
 pub struct Color {
@@ -7,10 +11,83 @@ pub struct Color {
     pub blue: f64,
 }
 
+impl AsRef<Color> for Color {
+    fn as_ref(&self) -> &Color {
+        return self;
+    }
+}
+
+impl PartialEq<Color> for Color {
+    fn eq(&self, other: &Color) -> bool {
+        return self.equals(other);
+    }
+    fn ne(&self, other: &Color) -> bool {
+        return !self.eq(other);
+    }
+}
+
+impl Mul<Color> for Color {
+    type Output = Color;
+
+    fn mul(self, rhs: Color) -> Self::Output {
+        return self.multiply(rhs);
+    }
+}
+
+impl Mul<&Color> for Color {
+    type Output = Color;
+
+    fn mul(self, rhs: &Color) -> Self::Output {
+        return self.multiply(rhs);
+    }
+}
+
+impl Sub<Color> for Color {
+    type Output = Color;
+
+    fn sub(self, rhs: Color) -> Self::Output {
+        return self.subtract(rhs);
+    }
+}
+
+impl Sub<&Color> for Color {
+    type Output = Color;
+
+    fn sub(self, rhs: &Color) -> Self::Output {
+        return self.subtract(rhs);
+    }
+}
+
+impl Add<Color> for Color {
+    type Output = Color;
+
+    fn add(self, rhs: Color) -> Self::Output {
+        return self.sum(rhs);
+    }
+}
+
+impl Add<&Color> for Color {
+    type Output = Color;
+
+    fn add(self, rhs: &Color) -> Self::Output {
+        return self.sum(rhs);
+    }
+}
+
 pub struct Pixel {
     pub red: i32,
     pub green: i32,
     pub blue: i32,
+}
+
+impl From<&Color> for Pixel {
+    fn from(color: &Color) -> Self {
+        return Pixel {
+            red: normalize(color.red, 255),
+            green: normalize(color.green, 255),
+            blue: normalize(color.blue, 255),
+        };
+    }
 }
 
 pub fn color(red: f64, green: f64, blue: f64) -> Color {
@@ -18,23 +95,24 @@ pub fn color(red: f64, green: f64, blue: f64) -> Color {
 }
 
 pub trait ColorMethods {
-    fn equals(&self, peer: &Color) -> bool;
-    fn add(&self, peer: &Color) -> Color;
-    fn subtract(&self, peer: &Color) -> Color;
-    fn multiply(&self, scalar: f64) -> Color;
-    fn product(&self, peer: &Color) -> Color;
-    fn to_pixel(&self, max: i32) -> Pixel;
+    fn equals<T: AsRef<Color>>(&self, peer: T) -> bool;
+    fn sum<T: AsRef<Color>>(&self, peer: T) -> Color; 
+    fn subtract<T: AsRef<Color>>(&self, peer: T) -> Color;
+    fn scale(&self, scalar: f64) -> Color;
+    fn multiply<T: AsRef<Color>>(&self, peer: T) -> Color;
 }
 
 impl ColorMethods for Color {
 
-    fn equals(self: &Color, peer: &Color) -> bool {
-        return self.red.is_about(peer.red)
-            && self.green.is_about(peer.green)
-            && self.blue.is_about(peer.blue);
+    fn equals<T: AsRef<Color>>(self: &Color, other: T) -> bool {
+        let peer = other.as_ref();
+        return self.red.equals(peer.red)
+            && self.green.equals(peer.green)
+            && self.blue.equals(peer.blue);
     }
 
-    fn add(self: &Color, peer: &Color) -> Color {
+    fn sum<T: AsRef<Color>>(self: &Self, other: T) -> Color {
+        let peer = other.as_ref();
         Color {
             red: self.red + peer.red,
             green: self.green + peer.green,
@@ -42,7 +120,8 @@ impl ColorMethods for Color {
         }
     }
 
-    fn subtract(self: &Color, peer: &Color) -> Color {
+    fn subtract<T: AsRef<Color>>(self: &Color, other: T) -> Color {
+        let peer = other.as_ref();
         Color {
             red: self.red - peer.red,
             green: self.green - peer.green,
@@ -50,7 +129,7 @@ impl ColorMethods for Color {
         }
     }
 
-    fn multiply(self: &Color, scalar: f64) -> Color {
+    fn scale(self: &Color, scalar: f64) -> Color {
         Color {
             red: self.red * scalar,
             green: self.green * scalar,
@@ -58,22 +137,14 @@ impl ColorMethods for Color {
         }
     }
 
-    fn product(self: &Color, peer: &Color) -> Color {
+    fn multiply<T: AsRef<Color>>(self: &Color, other: T) -> Color {
+        let peer = other.as_ref();
         Color {
             red: self.red * peer.red,
             green: self.green * peer.green,
             blue: self.blue * peer.blue,
         }
     }
-
-    fn to_pixel(self: &Color, max: i32) -> Pixel {
-        return Pixel {
-            red: normalize(self.red, max),
-            green: normalize(self.green, max),
-            blue: normalize(self.blue, max),
-        };
-    }
-
 }
 
 fn normalize(value: f64, max: i32) -> i32 {
@@ -95,9 +166,9 @@ mod tests {
     #[test]
     fn should_construct_colors() {
         let c = color(-0.5, 0.4, 1.7);
-        assert!(c.red.is_about(-0.5));
-        assert!(c.green.is_about(0.4));
-        assert!(c.blue.is_about(1.7));
+        assert!(c.red.equals(-0.5));
+        assert!(c.green.equals(0.4));
+        assert!(c.blue.equals(1.7));
     }
 
     // Page 17
@@ -123,9 +194,9 @@ mod tests {
     fn should_add_colors() {
         let c1 = color(0.9, 0.6, 0.75);
         let c2 = color(0.7, 0.1, 0.25);
-        let result = c1.add(&c2);
+        let result = c1.add(c2);
         let expected = color(1.6, 0.7, 1.0);
-        assert!(result.equals(&expected));
+        assert!(result == expected);
     }
 
     // Page 17
@@ -142,7 +213,7 @@ mod tests {
     #[test]
     fn should_multiply_colors() {
         let c1 = color(0.2, 0.3, 0.4);
-        let result = c1.multiply(2.0);
+        let result = c1.scale(2.0);
         let expected = color(0.4, 0.6, 0.8);
         assert!(result.equals(&expected));
     }
@@ -152,8 +223,8 @@ mod tests {
     fn should_calculate_hadamard_product() {
         let c1 = color(1.0, 0.2, 0.4);
         let c2 = color(0.9, 1.0, 0.1);
-        let result = c1.product(&c2);
+        let result = c1 * c2;
         let expected = color(0.9, 0.2, 0.04);
-        assert!(result.equals(&expected));
+        assert!(result == expected);
     }
 }

@@ -20,7 +20,7 @@ pub trait RayMethods {
 impl RayMethods for Ray {
 
     fn position(self: &Ray, magnitude: f64) -> Tuple {
-        return self.origin.add(&self.direction.multiply(magnitude));
+        return self.origin.sum(&self.direction.multiply(magnitude));
     }
 
     fn transform(self: &Ray, matrix: &Matrix4) -> Ray {
@@ -76,8 +76,8 @@ mod tests {
         let s = sphere();
         let xs = s.intersect(&r);
         assert!(xs.len() == 2);
-        assert!(xs[0].t.is_about(4.0));
-        assert!(xs[1].t.is_about(6.0));
+        assert!(xs[0].t.equals(4.0));
+        assert!(xs[1].t.equals(6.0));
     }
 
     #[test]
@@ -86,8 +86,8 @@ mod tests {
         let s = sphere();
         let xs = s.intersect(&r);
         assert!(xs.len() == 2);
-        assert!(xs[0].t.is_about(5.0));
-        assert!(xs[1].t.is_about(5.0));
+        assert!(xs[0].t.equals(5.0));
+        assert!(xs[1].t.equals(5.0));
     }
 
     #[test]
@@ -104,8 +104,8 @@ mod tests {
         let s = sphere();
         let xs =s.intersect(&r);
         assert!(xs.len() == 2);
-        assert!(xs[0].t.is_about(-1.0));
-        assert!(xs[1].t.is_about(1.0));
+        assert!(xs[0].t.equals(-1.0));
+        assert!(xs[1].t.equals(1.0));
     }
 
     #[test]
@@ -114,15 +114,15 @@ mod tests {
         let s = sphere();
         let xs =s.intersect(&r);
         assert!(xs.len() == 2);
-        assert!(xs[0].t.is_about(-6.0));
-        assert!(xs[1].t.is_about(-4.0));
+        assert!(xs[0].t.equals(-6.0));
+        assert!(xs[1].t.equals(-4.0));
     }
 
     #[test]
     fn should_return_intersections() {
         let s = sphere();
         let i = intersection(3.5, &s);
-        assert!(i.t.is_about(3.5));
+        assert!(i.t.equals(3.5));
         assert!(i.s.equals(&s));
     }
 
@@ -133,8 +133,8 @@ mod tests {
         let i2 = intersection(2.0, &s);
         let xs = [i1, i2];
         assert!(xs.len() == 2);
-        assert!(xs[0].t.is_about(1.0));
-        assert!(xs[1].t.is_about(2.0));
+        assert!(xs[0].t.equals(1.0));
+        assert!(xs[1].t.equals(2.0));
     }
 
     #[test]
