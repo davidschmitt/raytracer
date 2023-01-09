@@ -1,10 +1,10 @@
-use crate::color::{Color, Pixel };
+use crate::color::{Color, Pixel};
 use std::ops::{Index, IndexMut};
 
 pub struct Canvas {
     w: usize,
     h: usize,
-    pixels: Vec::<Color>,
+    pixels: Vec<Color>,
 }
 
 impl Index<[usize; 2]> for Canvas {
@@ -23,7 +23,6 @@ impl IndexMut<[usize; 2]> for Canvas {
 }
 
 impl Canvas {
-
     pub fn width(&self) -> usize {
         return self.w;
     }
@@ -42,7 +41,7 @@ impl Canvas {
             w: width,
             h: height,
             pixels: vec![black; width * height],
-        }
+        };
     }
 
     /*
@@ -69,12 +68,9 @@ impl Canvas {
                     line.push_str(" ");
                 }
                 length += 1;
-                let color = self[[x,y]];
+                let color = self[[x, y]];
                 let pixel = Pixel::from(&color);
-                line.push_str(&format!(
-                    "{} {} {}",
-                    pixel.red, pixel.green, pixel.blue
-                ));
+                line.push_str(&format!("{} {} {}", pixel.red, pixel.green, pixel.blue));
             }
             v.push(line);
         }
@@ -86,7 +82,6 @@ impl Canvas {
         for line in lines.iter() {
             println!("{}", line);
         }
-        
     }
 }
 

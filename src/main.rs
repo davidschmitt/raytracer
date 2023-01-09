@@ -1,9 +1,9 @@
-use color::Color;
-use transform::Transform;
 use canvas::Canvas;
+use color::Color;
 use intersection::Intersections;
 use ray::Ray;
 use shape::Shape;
+use transform::Transform;
 use tuple::Tuple;
 
 mod array2d;
@@ -61,7 +61,6 @@ fn main() {
     let scale = Transform::scaling(25.0, 25.0, 25.0);
     s.set_transform(&scale);
 
-
     for x in 0..256 {
         for y in 0..256 {
             let direction = Tuple::vector(x as f64 - 128.0, y as f64 - 128.0, 135.0);
@@ -71,7 +70,7 @@ fn main() {
             match hit {
                 None => {}
                 Some(_i) => {
-                    canvas[[x,y]] = c;
+                    canvas[[x, y]] = c;
                 }
             }
         }

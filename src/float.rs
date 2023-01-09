@@ -1,6 +1,6 @@
-use std::convert::{From, Into, AsRef};
-use std::ops::{Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign, Neg};
-use std::cmp::{PartialEq, PartialOrd, Ordering};
+use std::cmp::{Ordering, PartialEq, PartialOrd};
+use std::convert::{AsRef, From, Into};
+use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
 const EPSILON: f64 = 0.00001;
 
@@ -139,53 +139,53 @@ impl PartialOrd<i32> for Float {
     }
 }
 
-impl <S: Into<f64>> Add<S> for Float {
+impl<S: Into<f64>> Add<S> for Float {
     type Output = Float;
     fn add(self, rhs: S) -> Self::Output {
         return Float(self.0 + rhs.into());
     }
 }
 
-impl <S: Into<f64>> Sub<S> for Float {
+impl<S: Into<f64>> Sub<S> for Float {
     type Output = Float;
     fn sub(self, rhs: S) -> Self::Output {
         return Float(self.0 - rhs.into());
     }
 }
 
-impl <S: Into<f64>> Mul<S> for Float {
+impl<S: Into<f64>> Mul<S> for Float {
     type Output = Float;
     fn mul(self, rhs: S) -> Self::Output {
         return Float(self.0 * rhs.into());
     }
 }
 
-impl <S: Into<f64>> Div<S> for Float {
+impl<S: Into<f64>> Div<S> for Float {
     type Output = Float;
     fn div(self, rhs: S) -> Self::Output {
         return Float(self.0 / rhs.into());
     }
 }
 
-impl <S: Into<f64>> AddAssign<S> for Float {
+impl<S: Into<f64>> AddAssign<S> for Float {
     fn add_assign(&mut self, rhs: S) {
         self.0 += rhs.into();
     }
 }
 
-impl <S: Into<f64>> SubAssign<S> for Float {
+impl<S: Into<f64>> SubAssign<S> for Float {
     fn sub_assign(&mut self, rhs: S) {
         self.0 -= rhs.into();
     }
 }
 
-impl <S: Into<f64>> MulAssign<S> for Float {
+impl<S: Into<f64>> MulAssign<S> for Float {
     fn mul_assign(&mut self, rhs: S) {
         self.0 *= rhs.into();
     }
 }
 
-impl <S: Into<f64>> DivAssign<S> for Float {
+impl<S: Into<f64>> DivAssign<S> for Float {
     fn div_assign(&mut self, rhs: S) {
         self.0 /= rhs.into();
     }

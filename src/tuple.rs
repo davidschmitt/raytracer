@@ -1,7 +1,7 @@
 use crate::float::Float;
 use std::cmp::PartialEq;
-use std::convert::{Into, AsRef};
-use std::ops::{Add, Sub, Mul, Div, Neg};
+use std::convert::{AsRef, Into};
+use std::ops::{Add, Div, Mul, Neg, Sub};
 
 #[derive(Clone, Copy, Debug)]
 pub struct Tuple {
@@ -19,10 +19,7 @@ impl AsRef<Tuple> for Tuple {
 
 impl PartialEq<Tuple> for Tuple {
     fn eq(&self, peer: &Tuple) -> bool {
-        self.x == peer.x
-            && self.y == peer.y
-            && self.z == peer.z
-            && self.w == peer.w
+        self.x == peer.x && self.y == peer.y && self.z == peer.z && self.w == peer.w
     }
 
     fn ne(&self, other: &Tuple) -> bool {
@@ -30,7 +27,7 @@ impl PartialEq<Tuple> for Tuple {
     }
 }
 
-impl <S: AsRef<Tuple>> Add<S> for Tuple {
+impl<S: AsRef<Tuple>> Add<S> for Tuple {
     type Output = Tuple;
     fn add(self, rhs: S) -> Self::Output {
         let peer = rhs.as_ref();
@@ -39,11 +36,11 @@ impl <S: AsRef<Tuple>> Add<S> for Tuple {
             y: self.y + peer.y,
             z: self.z + peer.z,
             w: self.w + peer.w,
-        }
+        };
     }
 }
 
-impl <S: AsRef<Tuple>> Sub<S> for Tuple {
+impl<S: AsRef<Tuple>> Sub<S> for Tuple {
     type Output = Tuple;
     fn sub(self, rhs: S) -> Self::Output {
         let peer = rhs.as_ref();
@@ -52,11 +49,11 @@ impl <S: AsRef<Tuple>> Sub<S> for Tuple {
             y: self.y - peer.y,
             z: self.z - peer.z,
             w: self.w - peer.w,
-        }
+        };
     }
 }
 
-impl <S: Into<f64>> Mul<S> for Tuple {
+impl<S: Into<f64>> Mul<S> for Tuple {
     type Output = Tuple;
     fn mul(self, scalar: S) -> Tuple {
         let s = scalar.into();
@@ -65,11 +62,11 @@ impl <S: Into<f64>> Mul<S> for Tuple {
             y: self.y * s,
             z: self.z * s,
             w: self.w * s,
-        }
+        };
     }
 }
 
-impl <S: Into<f64>> Div<S> for Tuple {
+impl<S: Into<f64>> Div<S> for Tuple {
     type Output = Tuple;
     fn div(self, scalar: S) -> Tuple {
         // I assume one divide and four multiplies faster than four divides
@@ -79,7 +76,7 @@ impl <S: Into<f64>> Div<S> for Tuple {
             y: self.y * inverse,
             z: self.z * inverse,
             w: self.w * inverse,
-        }
+        };
     }
 }
 
@@ -91,18 +88,22 @@ impl Neg for Tuple {
             y: -self.y,
             z: -self.z,
             w: -self.w,
-        }
+        };
     }
 }
 
-
 impl Tuple {
-    pub fn new<X: Into<f64>, Y: Into<f64>, Z: Into<f64>, W: Into<f64>>(x: X, y: Y, z: Z, w: W) -> Tuple {
-        return Tuple { 
-            x: Float::from(x.into()), 
+    pub fn new<X: Into<f64>, Y: Into<f64>, Z: Into<f64>, W: Into<f64>>(
+        x: X,
+        y: Y,
+        z: Z,
+        w: W,
+    ) -> Tuple {
+        return Tuple {
+            x: Float::from(x.into()),
             y: Float::from(y.into()),
             z: Float::from(z.into()),
-            w: Float::from(w.into())
+            w: Float::from(w.into()),
         };
     }
 
@@ -151,7 +152,6 @@ impl Tuple {
     pub fn is_vector(self: &Tuple) -> bool {
         return self.w == 0;
     }
-
 }
 
 #[cfg(test)]
@@ -329,9 +329,7 @@ mod tests {
 
     #[test]
     fn should_normalize_vectors() {
-        assert!(
-            Tuple::vector(4, 0, 0).normalize() == Tuple::vector(1, 0, 0)
-        );
+        assert!(Tuple::vector(4, 0, 0).normalize() == Tuple::vector(1, 0, 0));
     }
 
     // Page 10

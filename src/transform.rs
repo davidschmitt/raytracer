@@ -52,13 +52,20 @@ impl Transform {
     }
 
     pub fn shearing<
-      XY: Into<f64>,
-      XZ: Into<f64>,
-      YX: Into<f64>,
-      YZ: Into<f64>,
-      ZX: Into<f64>,
-      ZY: Into<f64>,
-    >(xmy: XY, xmz: XZ, ymx: YX, ymz: YZ, zmx: ZX, zmy: ZY) -> Matrix4 {
+        XY: Into<f64>,
+        XZ: Into<f64>,
+        YX: Into<f64>,
+        YZ: Into<f64>,
+        ZX: Into<f64>,
+        ZY: Into<f64>,
+    >(
+        xmy: XY,
+        xmz: XZ,
+        ymx: YX,
+        ymz: YZ,
+        zmx: ZX,
+        zmy: ZY,
+    ) -> Matrix4 {
         return Matrix4::from([
             [1.0, xmy.into(), xmz.into(), 0.0],
             [ymx.into(), 1.0, ymz.into(), 0.0],
@@ -67,22 +74,15 @@ impl Transform {
         ]);
     }
 
-    
     pub fn identity() -> Matrix4 {
-        return Matrix4::from([
-            [1, 0, 0, 0],
-            [0, 1, 0, 0],
-            [0, 0, 1, 0],
-            [0, 0, 0, 1],
-        ]);
+        return Matrix4::from([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]);
     }
 }
 
-
 #[cfg(test)]
 mod tests {
-    use crate::tuple::Tuple;
     use super::*;
+    use crate::tuple::Tuple;
 
     //  Page 45
     #[test]
@@ -110,7 +110,7 @@ mod tests {
     fn should_not_translate_vectors() {
         let transform = Transform::translation(5, -3, 2);
         let v = Tuple::vector(-3, 4, 5);
-        let result = transform *v;
+        let result = transform * v;
         assert!(result == v);
     }
 

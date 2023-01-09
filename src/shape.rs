@@ -1,12 +1,12 @@
+use crate::float::Float;
+use crate::intersection::{Intersection, Intersections};
+use crate::matrix4::Matrix4;
+use crate::ray::Ray;
+use crate::transform::Transform;
+use crate::tuple::Tuple;
 use std::cmp::PartialEq;
 use std::sync::atomic::AtomicI32;
 use std::sync::atomic::Ordering;
-use crate::intersection::{Intersection, Intersections};
-use crate::matrix4::Matrix4;
-use crate::transform::Transform;
-use crate::tuple::Tuple;
-use crate::float::Float;
-use crate::ray::Ray;
 static shapeid: AtomicI32 = AtomicI32::new(1);
 
 pub const PI: f64 = std::f64::consts::PI;
@@ -45,7 +45,7 @@ impl Shape {
         let ray = opray.transform(&transform);
         match self {
             Shape::Sphere { .. } => {
-                let d = ray.origin - Tuple::point(0,0,0);
+                let d = ray.origin - Tuple::point(0, 0, 0);
                 let a = ray.direction.dot(ray.direction);
                 let b = ray.direction.dot(d) * 2;
                 let c = d.dot(d) - 1;
@@ -69,12 +69,13 @@ impl Shape {
 
     pub fn set_transform<M: AsRef<Matrix4>>(&mut self, mfour: M) {
         match self {
-            Shape::Sphere { ref mut transform, .. } => {
+            Shape::Sphere {
+                ref mut transform, ..
+            } => {
                 *transform = *(mfour.as_ref());
             }
         }
     }
-
 
     pub fn get_transform(&self) -> Matrix4 {
         match self {
@@ -86,13 +87,19 @@ impl Shape {
 
     pub fn normal_at<T: AsRef<Tuple>>(&self, at1: T) -> Tuple {
         match self {
-            Shape::Sphere { transform, .. } =>  {
+            Shape::Sphere { transform, .. } => {
                 let at2 = transform.inverse() * at1.as_ref();
                 let mut dif = at2 - Tuple::point(0, 0, 0);
                 dif.w = Float::from(0);
                 let mut dif2 = transform * dif;
                 dif2.w = Float::from(0);
-                println!("at1: {:?}, at2: {:?}, dif1: {:?}, dif2: {:?}", at1.as_ref(), at2, dif, dif2);
+                println!(
+                    "at1: {:?}, at2: {:?}, dif1: {:?}, dif2: {:?}",
+                    at1.as_ref(),
+                    at2,
+                    dif,
+                    dif2
+                );
                 return dif2.normalize();
             }
         }
@@ -101,17 +108,16 @@ impl Shape {
     pub fn sphere() -> Shape {
         return Shape::Sphere {
             id: (shapeid.fetch_add(1, Ordering::Relaxed)),
-            transform: Transform::identity()
+            transform: Transform::identity(),
         };
     }
-
 }
 
 #[cfg(test)]
 mod tests {
 
-    use crate::transform::Transform;
     use super::*;
+    use crate::transform::Transform;
 
     // Page 69
     #[test]
@@ -187,7 +193,7 @@ mod tests {
         let mut s = Shape::sphere();
         let m = Transform::scaling(1, 0.5, 1) * Transform::rotation_z(std::f64::consts::PI / 5.0);
         s.set_transform(m);
-        let at = Tuple::point(0, 2f64.sqrt() / 2.0, 2f64.sqrt() / - 2.0);
+        let at = Tuple::point(0, 2f64.sqrt() / 2.0, 2f64.sqrt() / -2.0);
         let n = s.normal_at(at);
         assert!(n == Tuple::vector(0, 0.97014, -0.24254));
     }

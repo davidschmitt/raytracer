@@ -2,7 +2,7 @@ use crate::float::Float;
 use crate::matrix2::Matrix2;
 use std::ops::{Index, IndexMut};
 
-pub struct Matrix3 ([[Float; 3]; 3]);
+pub struct Matrix3([[Float; 3]; 3]);
 
 impl PartialEq<Matrix3> for Matrix3 {
     fn eq(&self, other: &Matrix3) -> bool {
@@ -18,9 +18,7 @@ impl PartialEq<Matrix3> for Matrix3 {
     fn ne(&self, other: &Matrix3) -> bool {
         return !self.eq(other);
     }
-
 }
-
 
 impl Index<[usize; 2]> for Matrix3 {
     type Output = Float;
@@ -36,9 +34,7 @@ impl IndexMut<[usize; 2]> for Matrix3 {
     }
 }
 
-
 impl Matrix3 {
-
     pub fn new() -> Matrix3 {
         return Matrix3([[Float::from(0); 3]; 3]);
     }

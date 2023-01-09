@@ -22,11 +22,14 @@ impl AsRef<Intersection> for Intersection {
 
 impl Intersection {
     pub fn new<T: Into<f64>, S: AsRef<Shape>>(t: T, s: S) -> Intersection {
-        return Intersection { t: Float::from(t.into()), s: *(s.as_ref()) };
+        return Intersection {
+            t: Float::from(t.into()),
+            s: *(s.as_ref()),
+        };
     }
 }
 
-pub struct Intersections (Vec<Intersection>);
+pub struct Intersections(Vec<Intersection>);
 
 impl Index<usize> for Intersections {
     type Output = Intersection;

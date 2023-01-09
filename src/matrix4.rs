@@ -1,9 +1,9 @@
-use std::convert::AsRef;
-use std::cmp::PartialEq;
-use std::ops::{Index, IndexMut, Mul};
 use crate::float::Float;
 use crate::matrix3::Matrix3;
 use crate::tuple::Tuple;
+use std::cmp::PartialEq;
+use std::convert::AsRef;
+use std::ops::{Index, IndexMut, Mul};
 
 #[derive(Clone, Copy, Debug)]
 pub struct Matrix4([[Float; 4]; 4]);
@@ -31,7 +31,7 @@ impl PartialEq<Matrix4> for Matrix4 {
     }
 }
 
-impl <S: AsRef<Matrix4>> Mul<S> for Matrix4 {
+impl<S: AsRef<Matrix4>> Mul<S> for Matrix4 {
     type Output = Matrix4;
     fn mul(self, rhs: S) -> Self::Output {
         let mut m = Matrix4::new();
@@ -40,7 +40,8 @@ impl <S: AsRef<Matrix4>> Mul<S> for Matrix4 {
 
         for i in 0..4 {
             for j in 0..4 {
-                m.0[i][j] = a[i][0] * b[0][j] + a[i][1] * b[1][j] + a[i][2] * b[2][j] + a[i][3] * b[3][j];
+                m.0[i][j] =
+                    a[i][0] * b[0][j] + a[i][1] * b[1][j] + a[i][2] * b[2][j] + a[i][3] * b[3][j];
             }
         }
 
@@ -91,14 +92,13 @@ impl IndexMut<[usize; 2]> for Matrix4 {
 }
 
 impl Matrix4 {
-
     pub fn new() -> Matrix4 {
         return Matrix4([[Float::from(0); 4]; 4]);
     }
 
     pub fn from<S: Into<f64> + Copy>(values: [[S; 4]; 4]) -> Matrix4 {
         let mut m = Matrix4::new();
-        for i in 0..4  {
+        for i in 0..4 {
             for j in 0..4 {
                 m[[i, j]] = Float::from(values[i][j].into());
             }
@@ -181,13 +181,12 @@ impl Matrix4 {
         }
         return m2;
     }
-
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::transform::Transform;
     use super::*;
+    use crate::transform::Transform;
 
     //  Page 26
     #[test]
@@ -209,18 +208,8 @@ mod tests {
 
     #[test]
     fn should_check_equality() {
-        let a = Matrix4::from([
-            [1, 2, 3, 4],
-            [5, 6, 7, 8],
-            [9, 8, 7, 6],
-            [5, 4, 3, 2],
-        ]);
-        let b = Matrix4::from([
-            [1, 2, 3, 4],
-            [5, 6, 7, 8],
-            [9, 8, 7, 6],
-            [5, 4, 3, 2],
-        ]);
+        let a = Matrix4::from([[1, 2, 3, 4], [5, 6, 7, 8], [9, 8, 7, 6], [5, 4, 3, 2]]);
+        let b = Matrix4::from([[1, 2, 3, 4], [5, 6, 7, 8], [9, 8, 7, 6], [5, 4, 3, 2]]);
         assert!(a == b);
         let c = Matrix4::new();
         let d = Matrix4::new();
@@ -229,18 +218,8 @@ mod tests {
 
     #[test]
     fn should_check_inequality() {
-        let a = Matrix4::from([
-            [1, 2, 3, 4],
-            [5, 6, 7, 8],
-            [9, 8, 7, 6],
-            [5, 4, 3, 2],
-        ]);
-        let b = Matrix4::from([
-            [2, 3, 4, 5],
-            [6, 7, 8, 9],
-            [8, 7, 6, 5],
-            [4, 3, 2, 1],
-        ]);
+        let a = Matrix4::from([[1, 2, 3, 4], [5, 6, 7, 8], [9, 8, 7, 6], [5, 4, 3, 2]]);
+        let b = Matrix4::from([[2, 3, 4, 5], [6, 7, 8, 9], [8, 7, 6, 5], [4, 3, 2, 1]]);
         assert!(a != b);
         let c = Matrix4::new();
         let mut d = Matrix4::new();
@@ -250,18 +229,8 @@ mod tests {
 
     #[test]
     fn should_multiply() {
-        let a = Matrix4::from([
-            [1, 2, 3, 4],
-            [5, 6, 7, 8],
-            [9, 8, 7, 6],
-            [5, 4, 3, 2],
-        ]);
-        let b = Matrix4::from([
-            [-2, 1, 2, 3],
-            [3, 2, 1, -1],
-            [4, 3, 6, 5],
-            [1, 2, 7, 8],
-        ]);
+        let a = Matrix4::from([[1, 2, 3, 4], [5, 6, 7, 8], [9, 8, 7, 6], [5, 4, 3, 2]]);
+        let b = Matrix4::from([[-2, 1, 2, 3], [3, 2, 1, -1], [4, 3, 6, 5], [1, 2, 7, 8]]);
         let expected = Matrix4::from([
             [20, 22, 50, 48],
             [44, 54, 114, 108],
@@ -274,12 +243,7 @@ mod tests {
 
     #[test]
     fn should_multiply_tuple() {
-        let m= Matrix4::from([
-            [1, 2, 3, 4],
-            [2, 4, 4, 2],
-            [8, 6, 4, 1],
-            [0, 0, 0, 1],
-        ]);
+        let m = Matrix4::from([[1, 2, 3, 4], [2, 4, 4, 2], [8, 6, 4, 1], [0, 0, 0, 1]]);
         let t = Tuple::new(1, 2, 3, 1);
         let expected = Tuple::new(18, 24, 33, 1);
         let result = m * t;
@@ -288,12 +252,7 @@ mod tests {
 
     #[test]
     fn should_multiply_identity_matrix() {
-        let a = Matrix4::from([
-            [0, 1, 2, 4],
-            [1, 2, 4, 8],
-            [2, 4, 8, 16],
-            [4, 8, 16, 32],
-        ]);
+        let a = Matrix4::from([[0, 1, 2, 4], [1, 2, 4, 8], [2, 4, 8, 16], [4, 8, 16, 32]]);
         let result = a * Transform::identity();
         assert!(result == a);
 
@@ -304,18 +263,8 @@ mod tests {
 
     #[test]
     fn should_transpose() {
-        let a = Matrix4::from([
-            [0, 9, 3, 0],
-            [9, 8, 0, 8],
-            [1, 8, 5, 3],
-            [0, 0, 5, 8],
-        ]);
-        let expected = Matrix4::from([
-            [0, 9, 1, 0],
-            [9, 8, 8, 0],
-            [3, 0, 5, 5],
-            [0, 8, 3, 8],
-        ]);
+        let a = Matrix4::from([[0, 9, 3, 0], [9, 8, 0, 8], [1, 8, 5, 3], [0, 0, 5, 8]]);
+        let expected = Matrix4::from([[0, 9, 1, 0], [9, 8, 8, 0], [3, 0, 5, 5], [0, 8, 3, 8]]);
         let result = a.transpose();
         assert!(result == expected);
 
@@ -325,12 +274,7 @@ mod tests {
 
     #[test]
     fn should_calculate_submatrix() {
-        let a = Matrix4::from([
-            [-6, 1, 1, 6],
-            [-8, 5, 8, 6],
-            [-1, 0, 8, 2],
-            [-7, 1, -1, 1],
-        ]);
+        let a = Matrix4::from([[-6, 1, 1, 6], [-8, 5, 8, 6], [-1, 0, 8, 2], [-7, 1, -1, 1]]);
         let result = a.submatrix(2, 1);
         let expected = Matrix3::from([[-6, 1, 6], [-8, 8, 6], [-7, -1, 1]]);
         assert!(result == expected);
@@ -338,12 +282,7 @@ mod tests {
 
     #[test]
     fn should_calculate_determinant() {
-        let a = Matrix4::from([
-            [-2, -8, 3, 5],
-            [-3, 1, 7, 3],
-            [1, 2, -9, 6],
-            [-6, 7, 7, -9],
-        ]);
+        let a = Matrix4::from([[-2, -8, 3, 5], [-3, 1, 7, 3], [1, 2, -9, 6], [-6, 7, 7, -9]]);
         assert!(a.cofactor(0, 0) == 690);
         assert!(a.cofactor(0, 1) == 447);
         assert!(a.cofactor(0, 2) == 210);
@@ -353,33 +292,18 @@ mod tests {
 
     #[test]
     fn should_calculate_invertibility() {
-        let a = Matrix4::from([
-            [6, 4, 4, 4],
-            [5, 5, 7, 6],
-            [4, -9, 3, -7],
-            [9, 1, 7, -6],
-        ]);
+        let a = Matrix4::from([[6, 4, 4, 4], [5, 5, 7, 6], [4, -9, 3, -7], [9, 1, 7, -6]]);
         assert!(a.determinant() == -2120);
         assert!(a.is_invertible());
 
-        let a = Matrix4::from([
-            [-4, 2, -2, -3],
-            [9, 6, 2, 6],
-            [0, -5, 1, -5],
-            [0, 0, 0, 0],
-        ]);
+        let a = Matrix4::from([[-4, 2, -2, -3], [9, 6, 2, 6], [0, -5, 1, -5], [0, 0, 0, 0]]);
         assert!(a.determinant() == 0);
         assert!(!a.is_invertible());
     }
 
     #[test]
     fn should_invert() {
-        let a = Matrix4::from([
-            [-5, 2, 6, -8],
-            [1, -5, 1, 8],
-            [7, 7, -6, -7],
-            [1, -3, 7, 4],
-        ]);
+        let a = Matrix4::from([[-5, 2, 6, -8], [1, -5, 1, 8], [7, 7, -6, -7], [1, -3, 7, 4]]);
         let b = a.inverse();
         let expected = Matrix4::from([
             [0.21805, 0.45113, 0.24060, -0.04511],
@@ -400,12 +324,7 @@ mod tests {
 
     #[test]
     fn should_invert_more() {
-        let a = Matrix4::from([
-            [8, -5, 9, 2],
-            [7, 5, 6, 1],
-            [-6, 0, 9, 6],
-            [-3, 0, -9, -4],
-        ]);
+        let a = Matrix4::from([[8, -5, 9, 2], [7, 5, 6, 1], [-6, 0, 9, 6], [-3, 0, -9, -4]]);
         let result = a.inverse();
         let expected = Matrix4::from([
             [-0.15385, -0.15385, -0.28205, -0.53846],
@@ -418,12 +337,7 @@ mod tests {
 
     #[test]
     fn should_invert_even_more() {
-        let a = Matrix4::from([
-            [9, 3, 0, 9],
-            [-5, -2, -6, -3],
-            [-4, 9, 6, 4],
-            [-7, 6, 6, 2],
-        ]);
+        let a = Matrix4::from([[9, 3, 0, 9], [-5, -2, -6, -3], [-4, 9, 6, 4], [-7, 6, 6, 2]]);
         let result = a.inverse();
         let expected = Matrix4::from([
             [-0.04074, -0.07778, 0.14444, -0.22222],
@@ -436,18 +350,8 @@ mod tests {
 
     #[test]
     fn should_can_reverse() {
-        let a = Matrix4::from([
-            [3, -9, 7, 3],
-            [3, -8, 2, -9],
-            [-4, 4, 4, 1],
-            [-6, 5, -1, 1],
-        ]);
-        let b = Matrix4::from([
-            [8, 2, 2, 2],
-            [3, -1, 7, 0],
-            [7, 0, 5, 4],
-            [6, -2, 0, 5],
-        ]);
+        let a = Matrix4::from([[3, -9, 7, 3], [3, -8, 2, -9], [-4, 4, 4, 1], [-6, 5, -1, 1]]);
+        let b = Matrix4::from([[8, 2, 2, 2], [3, -1, 7, 0], [7, 0, 5, 4], [6, -2, 0, 5]]);
         let c = a * b;
         let result = c * b.inverse();
         assert!(result == a);

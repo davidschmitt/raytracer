@@ -14,7 +14,6 @@ impl AsRef<Ray> for Ray {
 }
 
 impl Ray {
-
     pub fn new<S: AsRef<Tuple>, T: AsRef<Tuple>>(origin: S, direction: T) -> Ray {
         return Ray {
             origin: *(origin.as_ref()),
@@ -28,10 +27,7 @@ impl Ray {
 
     pub fn transform<M: AsRef<Matrix4>>(self: &Ray, matrix: M) -> Ray {
         let m = matrix.as_ref();
-        return Ray::new(
-            m * self.origin,
-            m * self.direction,
-        );
+        return Ray::new(m * self.origin, m * self.direction);
     }
 }
 
@@ -68,7 +64,7 @@ mod tests {
         let e3 = Tuple::point(1, 3, 4);
         assert!(r3 == e3);
         let r4 = r.position(2.5);
-        let e4 = Tuple:: point(4.5, 3, 4);
+        let e4 = Tuple::point(4.5, 3, 4);
         assert!(r4 == e4);
     }
 
@@ -96,7 +92,7 @@ mod tests {
     fn should_miss_a_sphere() {
         let r = Ray::new(Tuple::point(0, 2, -5), Tuple::vector(0, 0, 1));
         let s = Shape::sphere();
-        let xs =s.intersect(&r);
+        let xs = s.intersect(&r);
         assert!(xs.len() == 0);
     }
 
@@ -104,7 +100,7 @@ mod tests {
     fn should_intersect_inside_a_sphere() {
         let r = Ray::new(Tuple::point(0, 0, 0), Tuple::vector(0, 0, 1));
         let s = Shape::sphere();
-        let xs =s.intersect(&r);
+        let xs = s.intersect(&r);
         assert!(xs.len() == 2);
         assert!(xs[0].t == -1);
         assert!(xs[1].t == 1);
@@ -114,7 +110,7 @@ mod tests {
     fn should_intersect_behind_a_sphere() {
         let r = Ray::new(Tuple::point(0, 0, 5), Tuple::vector(0, 0, 1));
         let s = Shape::sphere();
-        let xs =s.intersect(&r);
+        let xs = s.intersect(&r);
         assert!(xs.len() == 2);
         assert!(xs[0].t == -6);
         assert!(xs[1].t == -4);
@@ -143,7 +139,7 @@ mod tests {
     fn should_set_object_on_intersection() {
         let r = Ray::new(Tuple::point(0, 0, -5), Tuple::vector(0, 0, 1));
         let s = Shape::sphere();
-        let xs =s.intersect(&r);
+        let xs = s.intersect(&r);
         assert!(xs.len() == 2);
         assert!(s == xs[0].s);
         assert!(s == xs[1].s);

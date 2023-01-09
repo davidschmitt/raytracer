@@ -1,12 +1,12 @@
 use crate::float::Float;
-use std::cmp::{PartialEq};
+use std::cmp::PartialEq;
 use std::ops::{Index, IndexMut};
 
 pub struct Matrix2([[Float; 2]; 2]);
 
 impl Matrix2 {
     pub fn new() -> Matrix2 {
-        return Matrix2([[Float::from(0);  2]; 2]);
+        return Matrix2([[Float::from(0); 2]; 2]);
     }
 
     pub fn from<S: Into<f64> + Copy>(values: [[S; 2]; 2]) -> Matrix2 {
@@ -20,7 +20,7 @@ impl Matrix2 {
     }
 
     pub fn determinant(self: &Matrix2) -> Float {
-        return self[[0,0]] * self[[1,1]] - self[[1,0]] * self[[0,1]];
+        return self[[0, 0]] * self[[1, 1]] - self[[1, 0]] * self[[0, 1]];
     }
 }
 
@@ -36,12 +36,10 @@ impl PartialEq<Matrix2> for Matrix2 {
         return true;
     }
 
-
     fn ne(&self, other: &Matrix2) -> bool {
         return !self.eq(other);
     }
 }
-
 
 impl std::ops::Index<[usize; 2]> for Matrix2 {
     type Output = Float;

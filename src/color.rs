@@ -1,7 +1,7 @@
-use std::ops::{Mul, Sub, Add};
-use std::cmp::{PartialEq};
-use std::convert::AsRef;
 use crate::float::Float;
+use std::cmp::PartialEq;
+use std::convert::AsRef;
+use std::ops::{Add, Mul, Sub};
 
 #[derive(Clone, Copy, Debug)]
 pub struct Color {
@@ -18,16 +18,14 @@ impl AsRef<Color> for Color {
 
 impl PartialEq<Color> for Color {
     fn eq(&self, rhs: &Color) -> bool {
-        return self.red == rhs.red
-            && self.green == rhs.green
-            && self.blue == rhs.blue;
+        return self.red == rhs.red && self.green == rhs.green && self.blue == rhs.blue;
     }
     fn ne(&self, rhs: &Color) -> bool {
         return !self.eq(rhs);
     }
 }
 
-impl <S: AsRef<Color>> Add<S> for Color {
+impl<S: AsRef<Color>> Add<S> for Color {
     type Output = Color;
     fn add(self, rhs: S) -> Self::Output {
         let peer = rhs.as_ref();
@@ -39,7 +37,7 @@ impl <S: AsRef<Color>> Add<S> for Color {
     }
 }
 
-impl <S: AsRef<Color>> Sub<S> for Color {
+impl<S: AsRef<Color>> Sub<S> for Color {
     type Output = Color;
     fn sub(self, rhs: S) -> Self::Output {
         let peer = rhs.as_ref();
@@ -73,7 +71,7 @@ impl Mul<&Color> for Color {
     }
 }
 
-impl <S: Into<f64>> Mul<S> for Color {
+impl<S: Into<f64>> Mul<S> for Color {
     type Output = Color;
     fn mul(self, rhs: S) -> Self::Output {
         let scale = rhs.into();
@@ -91,7 +89,7 @@ pub struct Pixel {
     pub blue: i32,
 }
 
-impl <S: AsRef<Color>> From<S> for Pixel {
+impl<S: AsRef<Color>> From<S> for Pixel {
     fn from(color: S) -> Self {
         let x = color.as_ref();
         return Pixel {
@@ -104,25 +102,24 @@ impl <S: AsRef<Color>> From<S> for Pixel {
 
 impl Color {
     pub fn new<R: Into<f64>, G: Into<f64>, B: Into<f64>>(red: R, green: G, blue: B) -> Color {
-        return Color { 
-            red: Float::new(red), 
-            green: Float::new(green), 
+        return Color {
+            red: Float::new(red),
+            green: Float::new(green),
             blue: Float::new(blue),
         };
     }
 }
 
-    fn normalize(value: Float) -> i32 {
-        let max = 255;
-        if value < 0.0 {
-            return 0;
-        } else if value> 1.0 {
-            return max;
-        } else {
-            return (value * max as f64).round() as i32;
-        }
+fn normalize(value: Float) -> i32 {
+    let max = 255;
+    if value < 0.0 {
+        return 0;
+    } else if value > 1.0 {
+        return max;
+    } else {
+        return (value * max as f64).round() as i32;
     }
-
+}
 
 #[cfg(test)]
 mod tests {
