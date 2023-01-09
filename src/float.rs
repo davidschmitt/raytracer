@@ -4,59 +4,55 @@ use std::cmp::{PartialEq, PartialOrd, Ordering};
 
 const EPSILON: f64 = 0.00001;
 
-pub trait F64IsAbout {
-    fn equals(&self, peer: f64) -> bool;
-}
-
-impl F64IsAbout for f64 {
-    fn equals(self: &f64, peer: f64) -> bool {
-        return (self - peer).abs() < EPSILON;
-    }
-}
-
 #[derive(Clone, Copy, Debug)]
-pub struct MyFloat(f64);
+pub struct Float(f64);
 
-impl MyFloat {
-    pub fn new<S: Into<f64>>(value: S) -> MyFloat {
-        return MyFloat(value.into());
+impl Float {
+    pub fn new<S: Into<f64>>(value: S) -> Float {
+        return Float(value.into());
     }
-    pub fn sqrt(&self) -> MyFloat {
-        return MyFloat(self.0.sqrt());
+    pub fn sqrt(&self) -> Float {
+        return Float(self.0.sqrt());
+    }
+    pub fn round(&self) -> f64 {
+        return self.0.round();
+    }
+    pub fn powi(&self, value: i32) -> Float {
+        return Float(self.0.powi(value));
     }
 }
 
-impl From<f64> for MyFloat {
+impl From<f64> for Float {
     fn from(value: f64) -> Self {
-        return MyFloat(value);
+        return Float(value);
     }
 }
 
-impl From<MyFloat> for f64 {
-    fn from(value: MyFloat) -> Self {
+impl From<Float> for f64 {
+    fn from(value: Float) -> Self {
         return value.0;
     }
 }
 
-impl From<&MyFloat> for f64 {
-    fn from(value: &MyFloat) -> Self {
+impl From<&Float> for f64 {
+    fn from(value: &Float) -> Self {
         return value.0;
     }
 }
 
-impl From<i32> for MyFloat {
+impl From<i32> for Float {
     fn from(value: i32) -> Self {
-        return MyFloat(value as f64);
+        return Float(value as f64);
     }
 }
 
-impl AsRef<MyFloat> for MyFloat {
-    fn as_ref(&self) -> &MyFloat {
+impl AsRef<Float> for Float {
+    fn as_ref(&self) -> &Float {
         return self;
     }
 }
 
-impl PartialEq<f64> for MyFloat {
+impl PartialEq<f64> for Float {
     fn eq(&self, other: &f64) -> bool {
         return (self.0 - other).abs() < EPSILON;
     }
@@ -65,7 +61,7 @@ impl PartialEq<f64> for MyFloat {
     }
 }
 
-impl PartialEq<i32> for MyFloat {
+impl PartialEq<i32> for Float {
     fn eq(&self, other: &i32) -> bool {
         return (self.0 - (*other as f64)).abs() < EPSILON;
     }
@@ -74,16 +70,16 @@ impl PartialEq<i32> for MyFloat {
     }
 }
 
-impl PartialEq<MyFloat> for MyFloat {
-    fn eq(&self, other: &MyFloat) -> bool {
+impl PartialEq<Float> for Float {
+    fn eq(&self, other: &Float) -> bool {
         return self.eq(&other.0);
     }
-    fn ne(&self, other: &MyFloat) -> bool {
+    fn ne(&self, other: &Float) -> bool {
         return self.ne(&other.0);
     }
 }
 
-impl PartialOrd<f64> for MyFloat {
+impl PartialOrd<f64> for Float {
     fn ge(&self, other: &f64) -> bool {
         return self == other || self.0 > *other;
     }
@@ -107,25 +103,25 @@ impl PartialOrd<f64> for MyFloat {
     }
 }
 
-impl PartialOrd<MyFloat> for MyFloat {
-    fn ge(&self, other: &MyFloat) -> bool {
+impl PartialOrd<Float> for Float {
+    fn ge(&self, other: &Float) -> bool {
         return self.ge(&other.0);
     }
-    fn gt(&self, other: &MyFloat) -> bool {
+    fn gt(&self, other: &Float) -> bool {
         return self.gt(&other.0);
     }
-    fn le(&self, other: &MyFloat) -> bool {
+    fn le(&self, other: &Float) -> bool {
         return self.le(&other.0);
     }
-    fn lt(&self, other: &MyFloat) -> bool {
+    fn lt(&self, other: &Float) -> bool {
         return self.lt(&other.0);
     }
-    fn partial_cmp(&self, other: &MyFloat) -> Option<std::cmp::Ordering> {
+    fn partial_cmp(&self, other: &Float) -> Option<std::cmp::Ordering> {
         return self.partial_cmp(&other.0);
     }
 }
 
-impl PartialOrd<i32> for MyFloat {
+impl PartialOrd<i32> for Float {
     fn ge(&self, other: &i32) -> bool {
         return self.ge(&(*other as f64));
     }
@@ -143,61 +139,61 @@ impl PartialOrd<i32> for MyFloat {
     }
 }
 
-impl <S: Into<f64>> Add<S> for MyFloat {
-    type Output = MyFloat;
+impl <S: Into<f64>> Add<S> for Float {
+    type Output = Float;
     fn add(self, rhs: S) -> Self::Output {
-        return MyFloat(self.0 + rhs.into());
+        return Float(self.0 + rhs.into());
     }
 }
 
-impl <S: Into<f64>> Sub<S> for MyFloat {
-    type Output = MyFloat;
+impl <S: Into<f64>> Sub<S> for Float {
+    type Output = Float;
     fn sub(self, rhs: S) -> Self::Output {
-        return MyFloat(self.0 - rhs.into());
+        return Float(self.0 - rhs.into());
     }
 }
 
-impl <S: Into<f64>> Mul<S> for MyFloat {
-    type Output = MyFloat;
+impl <S: Into<f64>> Mul<S> for Float {
+    type Output = Float;
     fn mul(self, rhs: S) -> Self::Output {
-        return MyFloat(self.0 * rhs.into());
+        return Float(self.0 * rhs.into());
     }
 }
 
-impl <S: Into<f64>> Div<S> for MyFloat {
-    type Output = MyFloat;
+impl <S: Into<f64>> Div<S> for Float {
+    type Output = Float;
     fn div(self, rhs: S) -> Self::Output {
-        return MyFloat(self.0 / rhs.into());
+        return Float(self.0 / rhs.into());
     }
 }
 
-impl <S: Into<f64>> AddAssign<S> for MyFloat {
+impl <S: Into<f64>> AddAssign<S> for Float {
     fn add_assign(&mut self, rhs: S) {
         self.0 += rhs.into();
     }
 }
 
-impl <S: Into<f64>> SubAssign<S> for MyFloat {
+impl <S: Into<f64>> SubAssign<S> for Float {
     fn sub_assign(&mut self, rhs: S) {
         self.0 -= rhs.into();
     }
 }
 
-impl <S: Into<f64>> MulAssign<S> for MyFloat {
+impl <S: Into<f64>> MulAssign<S> for Float {
     fn mul_assign(&mut self, rhs: S) {
         self.0 *= rhs.into();
     }
 }
 
-impl <S: Into<f64>> DivAssign<S> for MyFloat {
+impl <S: Into<f64>> DivAssign<S> for Float {
     fn div_assign(&mut self, rhs: S) {
         self.0 /= rhs.into();
     }
 }
 
-impl Neg for MyFloat {
-    type Output = MyFloat;
-    fn neg(self) -> MyFloat {
-        return MyFloat(-self.0);
+impl Neg for Float {
+    type Output = Float;
+    fn neg(self) -> Float {
+        return Float(-self.0);
     }
 }

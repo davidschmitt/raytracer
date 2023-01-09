@@ -1,286 +1,306 @@
 use crate::matrix4::Matrix4;
-use crate::ray;
-use crate::tuple;
-use crate::tuple::TupleMethods;
 
-pub fn translation(x: f64, y: f64, z: f64) -> Matrix4 {
-    return Matrix4([
-        [1.0, 0.0, 0.0, x],
-        [0.0, 1.0, 0.0, y],
-        [0.0, 0.0, 1.0, z],
-        [0.0, 0.0, 0.0, 1.0],
-    ]);
-}
+pub struct Transform {}
 
-pub fn scaling(x: f64, y: f64, z: f64) -> Matrix4 {
-    return Matrix4([
-        [x, 0.0, 0.0, 0.0],
-        [0.0, y, 0.0, 0.0],
-        [0.0, 0.0, z, 0.0],
-        [0.0, 0.0, 0.0, 1.0],
-    ]);
-}
+impl Transform {
+    pub fn translation<X: Into<f64>, Y: Into<f64>, Z: Into<f64>>(x: X, y: Y, z: Z) -> Matrix4 {
+        return Matrix4::from([
+            [1.0, 0.0, 0.0, x.into()],
+            [0.0, 1.0, 0.0, y.into()],
+            [0.0, 0.0, 1.0, z.into()],
+            [0.0, 0.0, 0.0, 1.0],
+        ]);
+    }
 
-pub fn rotation_x(rad: f64) -> Matrix4 {
-    return Matrix4([
-        [1.0, 0.0, 0.0, 0.0],
-        [0.0, rad.cos(), -rad.sin(), 0.0],
-        [0.0, rad.sin(), rad.cos(), 0.0],
-        [0.0, 0.0, 0.0, 1.0],
-    ]);
-}
+    pub fn scaling<X: Into<f64>, Y: Into<f64>, Z: Into<f64>>(x: X, y: Y, z: Z) -> Matrix4 {
+        return Matrix4::from([
+            [x.into(), 0.0, 0.0, 0.0],
+            [0.0, y.into(), 0.0, 0.0],
+            [0.0, 0.0, z.into(), 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ]);
+    }
 
-pub fn rotation_y(rad: f64) -> Matrix4 {
-    return Matrix4([
-        [rad.cos(), 0.0, rad.sin(), 0.0],
-        [0.0, 1.0, 0.0, 0.0],
-        [-rad.sin(), 0.0, rad.cos(), 0.0],
-        [0.0, 0.0, 0.0, 1.0],
-    ]);
-}
+    pub fn rotation_x<R: Into<f64>>(rad: R) -> Matrix4 {
+        let r = rad.into();
+        return Matrix4::from([
+            [1.0, 0.0, 0.0, 0.0],
+            [0.0, r.cos(), -r.sin(), 0.0],
+            [0.0, r.sin(), r.cos(), 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ]);
+    }
 
-pub fn rotation_z(rad: f64) -> Matrix4 {
-    return Matrix4([
-        [rad.cos(), -rad.sin(), 0.0, 0.0],
-        [rad.sin(), rad.cos(), 0.0, 0.0],
-        [0.0, 0.0, 1.0, 0.0],
-        [0.0, 0.0, 0.0, 1.0],
-    ]);
-}
+    pub fn rotation_y<R: Into<f64>>(rad: R) -> Matrix4 {
+        let r = rad.into();
+        return Matrix4::from([
+            [r.cos(), 0.0, r.sin(), 0.0],
+            [0.0, 1.0, 0.0, 0.0],
+            [-r.sin(), 0.0, r.cos(), 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ]);
+    }
 
-pub fn shearing(xmy: f64, xmz: f64, ymx: f64, ymz: f64, zmx: f64, zmy: f64) -> Matrix4 {
-    return Matrix4([
-        [1.0, xmy, xmz, 0.0],
-        [ymx, 1.0, ymz, 0.0],
-        [zmx, zmy, 1.0, 0.0],
-        [0.0, 0.0, 0.0, 1.0],
-    ]);
+    pub fn rotation_z<R: Into<f64>>(rad: R) -> Matrix4 {
+        let r = rad.into();
+        return Matrix4::from([
+            [r.cos(), -r.sin(), 0.0, 0.0],
+            [r.sin(), r.cos(), 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ]);
+    }
+
+    pub fn shearing<
+      XY: Into<f64>,
+      XZ: Into<f64>,
+      YX: Into<f64>,
+      YZ: Into<f64>,
+      ZX: Into<f64>,
+      ZY: Into<f64>,
+    >(xmy: XY, xmz: XZ, ymx: YX, ymz: YZ, zmx: ZX, zmy: ZY) -> Matrix4 {
+        return Matrix4::from([
+            [1.0, xmy.into(), xmz.into(), 0.0],
+            [ymx.into(), 1.0, ymz.into(), 0.0],
+            [zmx.into(), zmy.into(), 1.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ]);
+    }
+
+    
+    pub fn identity() -> Matrix4 {
+        return Matrix4::from([
+            [1, 0, 0, 0],
+            [0, 1, 0, 0],
+            [0, 0, 1, 0],
+            [0, 0, 0, 1],
+        ]);
+    }
 }
 
 
 #[cfg(test)]
 mod tests {
-    use crate::matrix4::Matrix4Methods;
-
+    use crate::tuple::Tuple;
     use super::*;
 
     //  Page 45
     #[test]
     fn should_translate() {
-        let transform = translation(5.0, -3.0, 2.0);
-        let p = tuple::point(-3.0, 4.0, 5.0);
-        let result = transform.times_tuple(&p);
-        let expected = tuple::point(2.0, 1.0, 7.0);
-        assert!(result.equals(&expected));
+        let transform = Transform::translation(5, -3, 2);
+        let p = Tuple::point(-3, 4, 5);
+        let result = transform * p;
+        let expected = Tuple::point(2, 1, 7);
+        assert!(result == expected);
     }
 
     //  Page 45
     #[test]
     fn should_translate_in_reverse() {
-        let transform = translation(5.0, -3.0, 2.0);
+        let transform = Transform::translation(5, -3, 2);
         let inv = transform.inverse();
-        let p = tuple::point(-3.0, 4.0, 5.0);
-        let result = inv.times_tuple(&p);
-        let expected = tuple::point(-8.0, 7.0, 3.0);
-        assert!(result.equals(&expected));
+        let p = Tuple::point(-3, 4, 5);
+        let result = inv * p;
+        let expected = Tuple::point(-8, 7, 3);
+        assert!(result == expected);
     }
 
     //  Page 45
     #[test]
     fn should_not_translate_vectors() {
-        let transform = translation(5.0, -3.0, 2.0);
-        let v = tuple::vector(-3.0, 4.0, 5.0);
-        let result = transform.times_tuple(&v);
-        assert!(result.equals(&v));
+        let transform = Transform::translation(5, -3, 2);
+        let v = Tuple::vector(-3, 4, 5);
+        let result = transform *v;
+        assert!(result == v);
     }
 
     //  Page 46
     #[test]
     fn should_scale_a_point() {
-        let transform = scaling(2.0, 3.0, 4.0);
-        let p = tuple::point(-4.0, 6.0, 8.0);
-        let result = transform.times_tuple(&p);
-        let expected = tuple::point(-8.0, 18.0, 32.0);
-        assert!(result.equals(&expected));
+        let transform = Transform::scaling(2, 3, 4);
+        let p = Tuple::point(-4, 6, 8);
+        let result = transform * p;
+        let expected = Tuple::point(-8, 18, 32);
+        assert!(result == expected);
     }
 
     //  Page 46
     #[test]
     fn should_scale_a_vector() {
-        let transform = scaling(2.0, 3.0, 4.0);
-        let v = tuple::vector(-4.0, 6.0, 8.0);
-        let result = transform.times_tuple(&v);
-        let expected = tuple::vector(-8.0, 18.0, 32.0);
-        assert!(result.equals(&expected));
+        let transform = Transform::scaling(2, 3, 4);
+        let v = Tuple::vector(-4, 6, 8);
+        let result = transform * v;
+        let expected = Tuple::vector(-8, 18, 32);
+        assert!(result == expected);
     }
 
     //  Page 46
     #[test]
     fn should_scale_inversely() {
-        let transform = scaling(2.0, 3.0, 4.0);
+        let transform = Transform::scaling(2, 3, 4);
         let inv = transform.inverse();
-        let v = tuple::vector(-4.0, 6.0, 8.0);
-        let result = inv.times_tuple(&v);
-        let expected = tuple::vector(-2.0, 2.0, 2.0);
-        assert!(result.equals(&expected));
+        let v = Tuple::vector(-4, 6, 8);
+        let result = inv * v;
+        let expected = Tuple::vector(-2, 2, 2);
+        assert!(result == expected);
     }
 
     //  Page 47
     #[test]
     fn should_reflect() {
-        let transform = scaling(-1.0, 1.0, 1.0);
-        let p = tuple::point(2.0, 3.0, 4.0);
-        let result = transform.times_tuple(&p);
-        let expected = tuple::point(-2.0, 3.0, 4.0);
-        assert!(result.equals(&expected));
+        let transform = Transform::scaling(-1, 1, 1);
+        let p = Tuple::point(2, 3, 4);
+        let result = transform * p;
+        let expected = Tuple::point(-2, 3, 4);
+        assert!(result == expected);
     }
 
     //  Page 48
     #[test]
     fn should_rotate_around_x_axis() {
-        let p = tuple::point(0.0, 1.0, 0.0);
+        let p = Tuple::point(0, 1, 0);
         let two: f64 = 2.0;
 
-        let half_quarter = rotation_x(std::f64::consts::PI / 4.0);
-        let r1 = half_quarter.times_tuple(&p);
-        let e1 = tuple::point(0.0, two.sqrt() / 2.0, two.sqrt() / 2.0);
-        assert!(r1.equals(&e1));
+        let half_quarter = Transform::rotation_x(std::f64::consts::PI / 4.0);
+        let r1 = half_quarter * p;
+        let e1 = Tuple::point(0, two.sqrt() / 2.0, two.sqrt() / 2.0);
+        assert!(r1 == e1);
 
-        let full_quarter = rotation_x(std::f64::consts::PI / 2.0);
-        let r2 = full_quarter.times_tuple(&p);
-        let e2 = tuple::point(0.0, 0.0, 1.0);
-        assert!(r2.equals(&e2));
+        let full_quarter = Transform::rotation_x(std::f64::consts::PI / 2.0);
+        let r2 = full_quarter * p;
+        let e2 = Tuple::point(0, 0, 1);
+        assert!(r2 == e2);
     }
 
     //  Page 49
     #[test]
     fn should_inverse_rotate_around_x_axis() {
         let two: f64 = 2.0;
-        let p = tuple::point(0.0, 1.0, 0.0);
-        let half_quarter = rotation_x(std::f64::consts::PI / 4.0);
+        let p = Tuple::point(0, 1, 0);
+        let half_quarter = Transform::rotation_x(std::f64::consts::PI / 4.0);
         let inv = half_quarter.inverse();
-        let result = inv.times_tuple(&p);
-        let expected = tuple::point(0.0, two.sqrt() / 2.0, -two.sqrt() / 2.0);
-        assert!(result.equals(&expected));
+        let result = inv * p;
+        let expected = Tuple::point(0, two.sqrt() / 2.0, -two.sqrt() / 2.0);
+        assert!(result == expected);
     }
 
     //  Page 49
     #[test]
     fn should_rotate_around_y_axis() {
-        let p = tuple::point(0.0, 0.0, 1.0);
+        let p = Tuple::point(0, 0, 1);
         let two: f64 = 2.0;
 
-        let half_quarter = rotation_y(std::f64::consts::PI / 4.0);
-        let r1 = half_quarter.times_tuple(&p);
-        let e1 = tuple::point(two.sqrt() / 2.0, 0.0, two.sqrt() / 2.0);
-        assert!(r1.equals(&e1));
+        let half_quarter = Transform::rotation_y(std::f64::consts::PI / 4.0);
+        let r1 = half_quarter * p;
+        let e1 = Tuple::point(two.sqrt() / 2.0, 0, two.sqrt() / 2.0);
+        assert!(r1 == e1);
 
-        let full_quarter = rotation_y(std::f64::consts::PI / 2.0);
-        let r2 = full_quarter.times_tuple(&p);
-        let e2 = tuple::point(1.0, 0.0, 0.0);
-        assert!(r2.equals(&e2));
+        let full_quarter = Transform::rotation_y(std::f64::consts::PI / 2.0);
+        let r2 = full_quarter * p;
+        let e2 = Tuple::point(1, 0, 0);
+        assert!(r2 == e2);
     }
 
     //  Page 50
     #[test]
     fn should_rotate_around_z_axis() {
-        let p = tuple::point(0.0, 1.0, 0.0);
+        let p = Tuple::point(0, 1, 0);
         let two: f64 = 2.0;
 
-        let half_quarter = rotation_z(std::f64::consts::PI / 4.0);
-        let r1 = half_quarter.times_tuple(&p);
-        let e1 = tuple::point(-two.sqrt() / 2.0, two.sqrt() / 2.0, 0.0);
-        assert!(r1.equals(&e1));
+        let half_quarter = Transform::rotation_z(std::f64::consts::PI / 4.0);
+        let r1 = half_quarter * p;
+        let e1 = Tuple::point(-two.sqrt() / 2.0, two.sqrt() / 2.0, 0);
+        assert!(r1 == e1);
 
-        let full_quarter = rotation_z(std::f64::consts::PI / 2.0);
-        let r2 = full_quarter.times_tuple(&p);
-        let e2 = tuple::point(-1.0, 0.0, 0.0);
-        assert!(r2.equals(&e2));
+        let full_quarter = Transform::rotation_z(std::f64::consts::PI / 2.0);
+        let r2 = full_quarter * p;
+        let e2 = Tuple::point(-1, 0, 0);
+        assert!(r2 == e2);
     }
 
     //  Page 52
     #[test]
     fn should_shear_x_to_y() {
-        let transform = shearing(1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-        let p = tuple::point(2.0, 3.0, 4.0);
-        let result = transform.times_tuple(&p);
-        let expected = tuple::point(5.0, 3.0, 4.0);
-        assert!(result.equals(&expected));
+        let transform = Transform::shearing(1, 0, 0, 0, 0, 0);
+        let p = Tuple::point(2, 3, 4);
+        let result = transform * p;
+        let expected = Tuple::point(5, 3, 4);
+        assert!(result == expected);
     }
     //  Page 52
     #[test]
     fn should_shear_x_to_z() {
-        let transform = shearing(0.0, 1.0, 0.0, 0.0, 0.0, 0.0);
-        let p = tuple::point(2.0, 3.0, 4.0);
-        let result = transform.times_tuple(&p);
-        let expected = tuple::point(6.0, 3.0, 4.0);
-        assert!(result.equals(&expected));
+        let transform = Transform::shearing(0, 1, 0, 0, 0, 0);
+        let p = Tuple::point(2, 3, 4);
+        let result = transform * p;
+        let expected = Tuple::point(6, 3, 4);
+        assert!(result == expected);
     }
     //  Page 52
     #[test]
     fn should_shear_y_to_x() {
-        let transform = shearing(0.0, 0.0, 1.0, 0.0, 0.0, 0.0);
-        let p = tuple::point(2.0, 3.0, 4.0);
-        let result = transform.times_tuple(&p);
-        let expected = tuple::point(2.0, 5.0, 4.0);
-        assert!(result.equals(&expected));
+        let transform = Transform::shearing(0, 0, 1, 0, 0, 0);
+        let p = Tuple::point(2, 3, 4);
+        let result = transform * p;
+        let expected = Tuple::point(2, 5, 4);
+        assert!(result == expected);
     }
     //  Page 52
     #[test]
     fn should_shear_y_to_z() {
-        let transform = shearing(0.0, 0.0, 0.0, 1.0, 0.0, 0.0);
-        let p = tuple::point(2.0, 3.0, 4.0);
-        let result = transform.times_tuple(&p);
-        let expected = tuple::point(2.0, 7.0, 4.0);
-        assert!(result.equals(&expected));
+        let transform = Transform::shearing(0, 0, 0, 1, 0, 0);
+        let p = Tuple::point(2, 3, 4);
+        let result = transform * p;
+        let expected = Tuple::point(2, 7, 4);
+        assert!(result == expected);
     }
     //  Page 52
     #[test]
     fn should_shear_z_to_x() {
-        let transform = shearing(0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-        let p = tuple::point(2.0, 3.0, 4.0);
-        let result = transform.times_tuple(&p);
-        let expected = tuple::point(2.0, 3.0, 6.0);
-        assert!(result.equals(&expected));
+        let transform = Transform::shearing(0, 0, 0, 0, 1, 0);
+        let p = Tuple::point(2, 3, 4);
+        let result = transform * p;
+        let expected = Tuple::point(2, 3, 6);
+        assert!(result == expected);
     }
     //  Page 53
     #[test]
     fn should_shear_z_to_y() {
-        let transform = shearing(0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
-        let p = tuple::point(2.0, 3.0, 4.0);
-        let result = transform.times_tuple(&p);
-        let expected = tuple::point(2.0, 3.0, 7.0);
-        assert!(result.equals(&expected));
+        let transform = Transform::shearing(0, 0, 0, 0, 0, 1);
+        let p = Tuple::point(2, 3, 4);
+        let result = transform * p;
+        let expected = Tuple::point(2, 3, 7);
+        assert!(result == expected);
     }
 
     //  Page 54
     #[test]
     fn should_transform_in_sequence() {
-        let p = tuple::point(1.0, 0.0, 1.0);
-        let a = rotation_x(std::f64::consts::PI / 2.0);
-        let b = scaling(5.0, 5.0, 5.0);
-        let c = translation(10.0, 5.0, 7.0);
-        let p2 = a.times_tuple(&p);
-        let e2 = tuple::point(1.0, -1.0, 0.0);
-        assert!(p2.equals(&e2));
-        let p3 = b.times_tuple(&p2);
-        let e3 = tuple::point(5.0, -5.0, 0.0);
-        assert!(p3.equals(&e3));
-        let p4 = c.times_tuple(&p3);
-        let e4 = tuple::point(15.0, 0.0, 7.0);
-        assert!(p4.equals(&e4));
+        let p = Tuple::point(1, 0, 1);
+        let a = Transform::rotation_x(std::f64::consts::PI / 2.0);
+        let b = Transform::scaling(5, 5, 5);
+        let c = Transform::translation(10, 5, 7);
+        let p2 = a * p;
+        let e2 = Tuple::point(1, -1, 0);
+        assert!(p2 == e2);
+        let p3 = b * p2;
+        let e3 = Tuple::point(5, -5, 0);
+        assert!(p3 == e3);
+        let p4 = c * p3;
+        let e4 = Tuple::point(15, 0, 7);
+        assert!(p4 == e4);
     }
 
     //  Page 54
     #[test]
     fn should_transform_chained() {
-        let p = tuple::point(1.0, 0.0, 1.0);
-        let a = rotation_x(std::f64::consts::PI / 2.0);
-        let b = scaling(5.0, 5.0, 5.0);
-        let c = translation(10.0, 5.0, 7.0);
-        let t = c.multiply(&b).multiply(&a);
-        let result = t.times_tuple(&p);
-        let expected = tuple::point(15.0, 0.0, 7.0);
-        assert!(result.equals(&expected));
+        let p = Tuple::point(1, 0, 1);
+        let a = Transform::rotation_x(std::f64::consts::PI / 2.0);
+        let b = Transform::scaling(5, 5, 5);
+        let c = Transform::translation(10, 5, 7);
+        let t = c * b * a;
+        let result = t * p;
+        let expected = Tuple::point(15, 0, 7);
+        assert!(result == expected);
     }
 }

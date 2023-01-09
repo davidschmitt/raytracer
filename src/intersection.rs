@@ -1,36 +1,56 @@
-use crate::shape::{Shape, ShapeMethods};
+use crate::float::Float;
+use crate::shape::Shape;
+use std::ops::Index;
 
 #[derive(Clone, Copy, Debug)]
 pub struct Intersection {
-    pub t: f64,
+    pub t: Float,
     pub s: Shape,
 }
 
-pub trait IntersectionMethods {
-    fn equals(&self, peer: &Intersection) -> bool;
-}
-
-impl IntersectionMethods for Intersection {
-    fn equals(self: &Intersection, peer: &Intersection) -> bool {
-        return self.t == peer.t && self.s.equals(&peer.s);
+impl PartialEq<Intersection> for Intersection {
+    fn eq(&self, rhs: &Intersection) -> bool {
+        return self.t == rhs.t && self.s == rhs.s;
     }
 }
 
-pub fn intersection(t: f64, s: &Shape) -> Intersection {
-    return Intersection { t: t, s: *s };
+impl AsRef<Intersection> for Intersection {
+    fn as_ref(&self) -> &Intersection {
+        return self;
+    }
 }
 
-pub type Intersections = Vec<Intersection>;
-
-pub trait IntersectionsMethods {
-    fn hit(&self) -> Option<Intersection>;
+impl Intersection {
+    pub fn new<T: Into<f64>, S: AsRef<Shape>>(t: T, s: S) -> Intersection {
+        return Intersection { t: Float::from(t.into()), s: *(s.as_ref()) };
+    }
 }
 
-impl IntersectionsMethods for Intersections {
+pub struct Intersections (Vec<Intersection>);
 
-    fn hit(self: &Vec<Intersection>) -> Option<Intersection> {
+impl Index<usize> for Intersections {
+    type Output = Intersection;
+    fn index(&self, index: usize) -> &Self::Output {
+        return &self.0[index];
+    }
+}
+
+impl Intersections {
+    pub fn new() -> Intersections {
+        return Intersections(Vec::new());
+    }
+
+    pub fn from(values: &[Intersection]) -> Intersections {
+        let mut list = Intersections::new();
+        for value in values {
+            list.push(value);
+        }
+        return list;
+    }
+
+    pub fn hit(self: &Intersections) -> Option<Intersection> {
         let mut closest: Option<Intersection> = None;
-        for i in self {
+        for i in &self.0 {
             if i.t >= 0.0 {
                 match closest {
                     None => {
@@ -45,6 +65,14 @@ impl IntersectionsMethods for Intersections {
             }
         }
         return closest;
+    }
+
+    pub fn push<S: AsRef<Intersection>>(&mut self, i: S) {
+        self.0.push(*(i.as_ref()));
+    }
+
+    pub fn len(&self) -> usize {
+        return self.0.len();
     }
 }
 
