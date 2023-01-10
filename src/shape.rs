@@ -88,19 +88,12 @@ impl Shape {
     pub fn normal_at<T: AsRef<Tuple>>(&self, at1: T) -> Tuple {
         match self {
             Shape::Sphere { transform, .. } => {
-                let at2 = transform.inverse() * at1.as_ref();
-                let mut dif = at2 - Tuple::point(0, 0, 0);
-                dif.w = Float::from(0);
-                let mut dif2 = transform * dif;
-                dif2.w = Float::from(0);
-                println!(
-                    "at1: {:?}, at2: {:?}, dif1: {:?}, dif2: {:?}",
-                    at1.as_ref(),
-                    at2,
-                    dif,
-                    dif2
-                );
-                return dif2.normalize();
+                let t = at1.as_ref();
+                let object_point = transform.inverse() * t;
+                let mut world_normal = transform.inverse().transpose() * object_point;
+                // Page 82 cheat
+                world_normal.w = Float::from(0);
+                return world_normal.normalize();
             }
         }
     }
