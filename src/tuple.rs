@@ -152,6 +152,10 @@ impl Tuple {
     pub fn is_vector(self: &Tuple) -> bool {
         return self.w == 0;
     }
+
+    pub fn reflect<T: AsRef<Tuple>>(self, normal_vector: T) -> Tuple {
+        return self;
+    }
 }
 
 #[cfg(test)]
@@ -347,5 +351,24 @@ mod tests {
         let b = Tuple::vector(2, 3, 4);
         assert!(a.cross(b) == Tuple::vector(-1, 2, -1));
         assert!(b.cross(a) == Tuple::vector(1, -2, 1));
+    }
+
+    // Page 83
+    #[test]
+    fn should_reflect() {
+        let v = Tuple::vector(1, -1, 0);
+        let n: Tuple = Tuple::vector(0, 1, 0);
+        let r = v.reflect(n);
+        assert!(r == Tuple::vector(1, 1, 0));
+    }
+
+    // Page 83
+    #[test]
+    fn should_reflect_slanted() {
+        let x = 2.0_f64.sqrt() / 2.0;
+        let v = Tuple::vector(0, -1, 0);
+        let n: Tuple = Tuple::vector(x, x, 0);
+        let r = v.reflect(n);
+        assert!(r == Tuple::vector(1, 0, 0));
     }
 }

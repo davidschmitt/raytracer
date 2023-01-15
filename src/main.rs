@@ -1,6 +1,5 @@
 use canvas::Canvas;
 use color::Color;
-use intersection::Intersections;
 use ray::Ray;
 use shape::Shape;
 use transform::Transform;
@@ -11,6 +10,8 @@ mod canvas;
 mod color;
 mod float;
 mod intersection;
+mod light;
+mod material;
 mod matrix2;
 mod matrix3;
 mod matrix4;
@@ -59,7 +60,7 @@ fn main() {
     let mut s = Shape::sphere();
     let origin = Tuple::point(14.0, 19.0, -75.0);
     let scale = Transform::scaling(25.0, 25.0, 25.0);
-    s.set_transform(&scale);
+    s.transform = scale;
 
     for x in 0..256 {
         for y in 0..256 {
