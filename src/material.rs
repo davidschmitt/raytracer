@@ -57,4 +57,16 @@ mod tests {
         assert!(m.specular == 0.9);
         assert!(m.shininess == 200);
     }
+
+    // Page 86
+    #[test]
+    pub fn should_calc_when_eye_between_light_and_surface() {
+        let m = Material::new();
+        let position = Tuple::point(0, 0, 0);
+        let eyev = Tuple::vector(0, 0, -1);
+        let normalv = Tuple::vector(0, 0, -1);
+        let light = Light::point(Tuple::point(0, 0, -10), Color::new(1, 1, 1));
+        let result = m.lighting(light, position, eyev, normalv);
+        assert!(result == Color::new(1.9, 1.9, 1.9));
+    }
 }
