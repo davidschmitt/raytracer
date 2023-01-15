@@ -1,9 +1,12 @@
 use canvas::Canvas;
 use color::Color;
+use light::Light;
+use material::Material;
 use ray::Ray;
 use shape::Shape;
 use transform::Transform;
 use tuple::Tuple;
+use world::World;
 
 mod array2d;
 mod canvas;
@@ -19,6 +22,7 @@ mod ray;
 mod shape;
 mod transform;
 mod tuple;
+mod world;
 
 fn main() {
     /*let mut art = canvas::canvas(256, 256);
@@ -56,21 +60,30 @@ fn main() {
     */
 
     let mut canvas = Canvas::new(256, 256);
-    let c = Color::new(0.0, 0.9, 1.0);
+
     let mut s = Shape::sphere();
+    s.material = Material::new();
+    s.material.color = Color::new(1, 0.2, 1);
+
+    let mut bulb = Light::point(Tuple::point(-25, 20, -30), Color::new(1, 1, 1));
+
     let origin = Tuple::point(14.0, 19.0, -75.0);
     let scale = Transform::scaling(25.0, 25.0, 25.0);
     s.transform = scale;
 
     for x in 0..256 {
         for y in 0..256 {
-            let direction = Tuple::vector(x as f64 - 128.0, y as f64 - 128.0, 135.0);
+            let direction = Tuple::vector(x as f64 - 128.0, y as f64 - 128.0, 135.0).normalize();
             let r1 = Ray::new(&origin, &direction);
             let intlist = s.intersect(&r1);
             let hit = intlist.hit();
             match hit {
                 None => {}
-                Some(_i) => {
+                Some(i) => {
+                    let point = r1.position(i.t);
+                    let normal = i.s.normal_at(point);
+                    let eye = -r1.direction;
+                    let c = i.s.material.lighting(bulb.as_ref(), point, eye, normal);
                     canvas[[x, y]] = c;
                 }
             }

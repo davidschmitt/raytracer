@@ -101,11 +101,23 @@ impl<S: AsRef<Color>> From<S> for Pixel {
 }
 
 impl Color {
+    pub const BLACK: Color = Color {
+        red: Float(0.0),
+        green: Float(0.0),
+        blue: Float(0.0),
+    };
+
+    pub const WHITE: Color = Color {
+        red: Float(1.0),
+        green: Float(1.0),
+        blue: Float(1.0),
+    };
+
     pub fn new<R: Into<f64>, G: Into<f64>, B: Into<f64>>(red: R, green: G, blue: B) -> Color {
         return Color {
-            red: Float::new(red),
-            green: Float::new(green),
-            blue: Float::new(blue),
+            red: Float(red.into()),
+            green: Float(green.into()),
+            blue: Float(blue.into()),
         };
     }
 }

@@ -5,7 +5,7 @@ use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssi
 const EPSILON: f64 = 0.00001;
 
 #[derive(Clone, Copy, Debug)]
-pub struct Float(f64);
+pub struct Float(pub f64);
 
 impl Float {
     pub fn new<S: Into<f64>>(value: S) -> Float {
@@ -19,6 +19,9 @@ impl Float {
     }
     pub fn powi(&self, value: i32) -> Float {
         return Float(self.0.powi(value));
+    }
+    pub fn powf<S: Into<f64>>(&self, value: S) -> Float {
+        return Float(self.0.powf(value.into()));
     }
 }
 

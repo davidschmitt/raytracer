@@ -154,7 +154,10 @@ impl Tuple {
     }
 
     pub fn reflect<T: AsRef<Tuple>>(self, normal_vector: T) -> Tuple {
-        return self;
+        let self1: Tuple = *normal_vector.as_ref() * 2;
+        let self2: Tuple = self1 * self.dot(normal_vector);
+        let self3: Tuple = self - self2;
+        return self3;
     }
 }
 
