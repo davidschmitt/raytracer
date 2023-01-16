@@ -1,6 +1,7 @@
 use canvas::Canvas;
 use color::Color;
 use light::Light;
+use float::Float;
 use material::Material;
 use ray::Ray;
 use shape::Shape;
@@ -63,6 +64,7 @@ fn main() {
 
     let mut s = Shape::sphere();
     s.material = Material::new();
+    s.material.ambient = Float(0.0);
     s.material.color = Color::new(1, 0.2, 1);
 
     let mut bulb = Light::point(Tuple::point(-25, 20, -30), Color::new(1, 1, 1));
