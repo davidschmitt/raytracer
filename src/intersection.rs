@@ -1,11 +1,18 @@
 use crate::float::Float;
 use crate::shape::Shape;
+use std::cmp::PartialOrd;
 use std::ops::Index;
 
 #[derive(Clone, Copy, Debug)]
 pub struct Intersection {
     pub t: Float,
     pub s: Shape,
+}
+
+impl PartialOrd<Intersection> for Intersection {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        return self.t.partial_cmp(&other.t);
+    }
 }
 
 impl PartialEq<Intersection> for Intersection {
@@ -29,7 +36,8 @@ impl Intersection {
     }
 }
 
-pub struct Intersections(Vec<Intersection>);
+#[derive(Clone, Debug)]
+pub struct Intersections(pub Vec<Intersection>);
 
 impl Index<usize> for Intersections {
     type Output = Intersection;
@@ -76,6 +84,10 @@ impl Intersections {
 
     pub fn len(&self) -> usize {
         return self.0.len();
+    }
+
+    pub fn sort(&mut self) {
+        self.0.sort_by(|a, b| a.t.0.total_cmp(&b.t.0));
     }
 }
 

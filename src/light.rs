@@ -6,6 +6,16 @@ pub enum LightKind {
     Point,
 }
 
+impl PartialEq<LightKind> for LightKind {
+    fn eq(&self, peer: &LightKind) -> bool {
+        match (self, peer) {
+            (LightKind::Point { .. }, LightKind::Point { .. }) => return true,
+        }
+        return false;
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
 pub struct Light {
     pub position: Tuple,
     pub intensity: Color,
@@ -25,6 +35,14 @@ impl Light {
             intensity: *intensity.as_ref(),
             kind: LightKind::Point,
         };
+    }
+}
+
+impl PartialEq<Light> for Light {
+    fn eq(&self, rhs: &Light) -> bool {
+        return self.position == rhs.position
+            && self.intensity == rhs.intensity
+            && self.kind == rhs.kind;
     }
 }
 

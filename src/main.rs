@@ -1,7 +1,7 @@
 use canvas::Canvas;
 use color::Color;
-use light::Light;
 use float::Float;
+use light::Light;
 use material::Material;
 use ray::Ray;
 use shape::Shape;
